@@ -1,0 +1,16 @@
+/.idea
+/.mvn
+/target
+*.iml
+*.log
+.env
+.DS_Store
+.classpath
+.project
+.settings/
+/.settings
+/.classpath
+/.vscode
+logs/
+node_modules/
+/.gradle

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/biursite
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+app:
+  jwt:
+    secret: change-this-to-a-secure-secret-key-of-appropriate-length
+    expiration-ms: 3600000
+server:
+  port: 8080
