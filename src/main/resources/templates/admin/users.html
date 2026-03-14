@@ -1,0 +1,420 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  lang="en"
+>
+  <head th:replace="~{fragments/head :: head('Admin Users - BiUrSite')}"></head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
+        >
+          <div>
+            <h1
+              class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white"
+            >
+              User Management
+            </h1>
+            <p class="mt-1 text-gray-500 dark:text-gray-400">
+              Review users and manage account status.
+            </p>
+          </div>
+          <div class="w-full sm:w-1/2">
+            <form id="filterForm" class="flex gap-2">
+              <input
+                type="search"
+                id="qInput"
+                name="q"
+                placeholder="Search username or email..."
+                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                th:value="${q}"
+              />
+              <select
+                id="statusSelect"
+                name="status"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option th:selected="${status == 'all'}" value="all">
+                  All
+                </option>
+                <option th:selected="${status == 'active'}" value="active">
+                  Active
+                </option>
+                <option th:selected="${status == 'banned'}" value="banned">
+                  Banned
+                </option>
+              </select>
+              <button
+                type="button"
+                id="clearFilters"
+                class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+              >
+                Clear
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div
+          th:if="${param.updated}"
+          class="mb-6 flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 text-green-800 dark:text-green-200"
+        >
+          <i class="fas fa-check-circle"></i>
+          <span>User status updated.</span>
+        </div>
+
+        <div
+          th:if="${param.error != null and param.error[0] == 'selfban'}"
+          class="mb-6 flex items-center gap-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-red-800 dark:text-red-200"
+        >
+          <i class="fas fa-exclamation-circle"></i>
+          <span>You cannot ban your own account.</span>
+        </div>
+
+        <div id="userCards" class="grid gap-4">
+          <article
+            th:each="user : ${users}"
+            th:attr="data-user-id=${user.id}"
+            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h2
+                    class="text-lg font-semibold text-gray-900 dark:text-white"
+                    th:text="${user.username}"
+                  >
+                    username
+                  </h2>
+                  <span
+                    class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    th:text="${user.role}"
+                  >
+                    ROLE_USER
+                  </span>
+                  <span
+                    th:if="${user.banned}"
+                    class="px-2 py-0.5 text-xs rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+                  >
+                    BANNED
+                  </span>
+                </div>
+                <p
+                  class="text-sm text-gray-600 dark:text-gray-300"
+                  th:text="${user.email}"
+                >
+                  email@example.com
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Joined
+                  <span
+                    th:text="${#temporals.format(user.createdAt, 'MMM d, yyyy')}"
+                    >Jan 1, 2026</span
+                  >
+                </p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <form
+                  th:if="${!user.banned}"
+                  th:action="@{/admin/users/{id}/ban(id=${user.id})}"
+                  method="post"
+                >
+                  <input
+                    type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}"
+                  />
+                  <button
+                    type="submit"
+                    class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-colors duration-200"
+                  >
+                    <i class="fas fa-user-slash mr-2"></i>Ban
+                  </button>
+                </form>
+
+                <form
+                  th:if="${user.banned}"
+                  th:action="@{/admin/users/{id}/unban(id=${user.id})}"
+                  method="post"
+                >
+                  <input
+                    type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}"
+                  />
+                  <button
+                    type="submit"
+                    class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-green-600 hover:bg-green-700 text-white transition-colors duration-200"
+                  >
+                    <i class="fas fa-user-check mr-2"></i>Unban
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div
+          id="emptyState"
+          th:if="${#lists.isEmpty(users)}"
+          class="text-center py-16"
+        >
+          <div
+            class="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6"
+          >
+            <i
+              class="fas fa-users text-3xl text-gray-400 dark:text-gray-500"
+            ></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            No users found
+          </h3>
+        </div>
+
+        <div
+          id="loadingIndicator"
+          class="hidden mt-8 flex justify-center items-center"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-6 h-6 border-2 border-indigo-200 dark:border-indigo-800 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"
+            ></div>
+            <span class="text-gray-600 dark:text-gray-400 font-medium"
+              >Loading more users...</span
+            >
+          </div>
+        </div>
+
+        <div
+          id="allCaughtUpMessage"
+          class="hidden mt-10 flex justify-center items-center"
+        >
+          <div class="text-center py-8">
+            <div
+              class="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mx-auto mb-4"
+            >
+              <i
+                class="fas fa-check-circle text-2xl text-indigo-600 dark:text-indigo-400"
+              ></i>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 text-lg font-medium">
+              You're all caught up.
+            </p>
+          </div>
+        </div>
+
+        <div id="scrollSentinel" class="mt-10"></div>
+      </div>
+    </main>
+
+    <script th:inline="javascript">
+      const userCards = document.getElementById("userCards");
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      const allCaughtUpMessage = document.getElementById("allCaughtUpMessage");
+      const sentinel = document.getElementById("scrollSentinel");
+
+      let currentPage = Number(/*[[${currentPage}]]*/ 0);
+      let hasNext = Boolean(/*[[${hasNext}]]*/ false);
+      let isLoading = false;
+      const csrfName = /*[[${_csrf.parameterName}]]*/ "_csrf";
+      const csrfToken = /*[[${_csrf.token}]]*/ "";
+      const qInput = document.getElementById("qInput");
+      const statusSelect = document.getElementById("statusSelect");
+      const clearFiltersBtn = document.getElementById("clearFilters");
+
+      // Current filter state (initialize from server model values)
+      let currentQ = /*[[${q}]]*/ "";
+      let currentStatus = /*[[${status}]]*/ "all";
+
+      const renderedIds = new Set(
+        Array.from(document.querySelectorAll("[data-user-id]")).map((el) =>
+          Number(el.getAttribute("data-user-id")),
+        ),
+      );
+
+      if (!hasNext) {
+        allCaughtUpMessage.classList.remove("hidden");
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting || isLoading || !hasNext) {
+              return;
+            }
+            loadNextChunk();
+          });
+        },
+        {
+          root: null,
+          rootMargin: "120px",
+          threshold: 0,
+        },
+      );
+
+      observer.observe(sentinel);
+
+      function userCardHtml(user) {
+        const statusBadge = user.banned
+          ? '<span class="px-2 py-0.5 text-xs rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">BANNED</span>'
+          : "";
+        const actionPath = user.banned
+          ? `/admin/users/${user.id}/unban`
+          : `/admin/users/${user.id}/ban`;
+        const actionStyle = user.banned
+          ? "bg-green-600 hover:bg-green-700"
+          : "bg-red-600 hover:bg-red-700";
+        const actionIcon = user.banned ? "fa-user-check" : "fa-user-slash";
+        const actionLabel = user.banned ? "Unban" : "Ban";
+        const joined = new Date(user.createdAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        return `
+          <article data-user-id="${user.id}" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">${escapeHtml(user.username)}</h2>
+                  <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">${escapeHtml(user.role)}</span>
+                  ${statusBadge}
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-300">${escapeHtml(user.email)}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined ${joined}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <form action="${actionPath}" method="post">
+                  <input type="hidden" name="${escapeHtml(csrfName)}" value="${escapeHtml(csrfToken)}" />
+                  <button type="submit" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium ${actionStyle} text-white transition-colors duration-200">
+                    <i class="fas ${actionIcon} mr-2"></i>${actionLabel}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function loadNextChunk() {
+        isLoading = true;
+        loadingIndicator.classList.remove("hidden");
+
+        try {
+          const nextPage = currentPage + 1;
+          const params = new URLSearchParams();
+          params.set("page", String(nextPage));
+          if (currentQ && currentQ.trim() !== "")
+            params.set("q", currentQ.trim());
+          if (currentStatus && currentStatus !== "all")
+            params.set("status", currentStatus);
+          const response = await fetch(
+            `/admin/users/chunk?${params.toString()}`,
+            {
+              credentials: "same-origin",
+            },
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to load user chunk");
+          }
+
+          const payload = await response.json();
+          const nextUsers = payload.users || [];
+
+          if (nextUsers.length > 0) {
+            const htmlToAppend = nextUsers
+              .filter((user) => !renderedIds.has(Number(user.id)))
+              .map((user) => {
+                renderedIds.add(Number(user.id));
+                return userCardHtml(user);
+              })
+              .join("");
+
+            if (htmlToAppend) {
+              userCards.insertAdjacentHTML("beforeend", htmlToAppend);
+            }
+          }
+
+          currentPage = nextPage;
+          hasNext = Boolean(payload.hasNext);
+
+          if (!hasNext) {
+            allCaughtUpMessage.classList.remove("hidden");
+            observer.disconnect();
+          }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          loadingIndicator.classList.add("hidden");
+          isLoading = false;
+        }
+      }
+
+      function resetListAndLoad() {
+        // Reset state
+        renderedIds.clear();
+        userCards.innerHTML = "";
+        currentPage = -1; // loadNextChunk increments to 0
+        hasNext = true;
+        allCaughtUpMessage.classList.add("hidden");
+        observer.observe(sentinel);
+        loadNextChunk();
+      }
+
+      // Debounce helper
+      function debounce(fn, wait) {
+        let t;
+        return function (...args) {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(this, args), wait);
+        };
+      }
+
+      // Wire filter inputs
+      if (qInput) {
+        qInput.addEventListener(
+          "input",
+          debounce((e) => {
+            currentQ = e.target.value || "";
+            resetListAndLoad();
+          }, 400),
+        );
+      }
+      if (statusSelect) {
+        statusSelect.addEventListener("change", (e) => {
+          currentStatus = e.target.value || "all";
+          resetListAndLoad();
+        });
+      }
+      if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener("click", () => {
+          currentQ = "";
+          currentStatus = "all";
+          if (qInput) qInput.value = "";
+          if (statusSelect) statusSelect.value = "all";
+          resetListAndLoad();
+        });
+      }
+    </script>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </body>
+</html>

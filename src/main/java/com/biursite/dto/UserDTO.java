@@ -13,5 +13,6 @@ public class UserDTO {
     private String username;
     private String email;
     private String role;
+    private Boolean banned;
     private Instant createdAt;
 }

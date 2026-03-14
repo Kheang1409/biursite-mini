@@ -1,0 +1,158 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/head :: head('Register - BiUrSite')}"></head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main
+      class="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4"
+    >
+      <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 mb-4"
+          >
+            <i
+              class="fas fa-user-plus text-2xl text-indigo-600 dark:text-indigo-400"
+            ></i>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Create an account
+          </h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Join BiUrSite and start sharing
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700"
+        >
+          <form
+            th:action="@{/register}"
+            th:object="${registerRequest}"
+            method="post"
+            class="space-y-5"
+          >
+            <input
+              type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
+            <div>
+              <label
+                for="username"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                >Username</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-user text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <input
+                  type="text"
+                  id="username"
+                  th:field="*{username}"
+                  required
+                  placeholder="Choose a username"
+                  class="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+              </div>
+              <span
+                class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+                th:if="${#fields.hasErrors('username')}"
+              >
+                <i class="fas fa-exclamation-circle text-xs"></i>
+                <span th:errors="*{username}"></span>
+              </span>
+            </div>
+
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                >Email</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i
+                    class="fas fa-envelope text-gray-400 dark:text-gray-500"
+                  ></i>
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  th:field="*{email}"
+                  required
+                  placeholder="Enter your email"
+                  class="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+              </div>
+              <span
+                class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+                th:if="${#fields.hasErrors('email')}"
+              >
+                <i class="fas fa-exclamation-circle text-xs"></i>
+                <span th:errors="*{email}"></span>
+              </span>
+            </div>
+
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                >Password</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-lock text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  th:field="*{password}"
+                  required
+                  placeholder="Create a password"
+                  class="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+              </div>
+              <span
+                class="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1"
+                th:if="${#fields.hasErrors('password')}"
+              >
+                <i class="fas fa-exclamation-circle text-xs"></i>
+                <span th:errors="*{password}"></span>
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center justify-center gap-2"
+            >
+              <i class="fas fa-user-plus"></i>
+              Create Account
+            </button>
+          </form>
+        </div>
+
+        <p class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          Already have an account?
+          <a
+            th:href="@{/login}"
+            class="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition"
+            >Sign in instead</a
+          >
+        </p>
+      </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </body>
+</html>

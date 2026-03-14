@@ -2,40 +2,48 @@ package com.biursite.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    @Value("${app.jwt.secret:secret-key-please-change}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
     @Value("${app.jwt.expiration-ms:3600000}")
     private long jwtExpirationMs;
 
-    private Key key() {
+    private SecretKey key() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+    @PostConstruct
+    public void validateSecret() {
+        if (jwtSecret == null || jwtSecret.length() < 32) {
+            throw new IllegalStateException("JWT secret must be configured and at least 32 characters long");
+        }
     }
 
     public String generateToken(String username, String role) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + jwtExpirationMs);
         return Jwts.builder()
-                .setSubject(username)
+                .subject(username)
                 .claim("role", role)
-                .setIssuedAt(now)
-                .setExpiration(exp)
-                .signWith(key(), SignatureAlgorithm.HS256)
+                .issuedAt(now)
+                .expiration(exp)
+                .signWith(key())
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
+            Jwts.parser().verifyWith(key()).build().parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
@@ -43,12 +51,12 @@ public class JwtUtil {
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().verifyWith(key()).build().parseSignedClaims(token).getPayload();
         return claims.getSubject();
     }
 
     public String getRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().verifyWith(key()).build().parseSignedClaims(token).getPayload();
         return claims.get("role", String.class);
     }
 }

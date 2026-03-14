@@ -1,0 +1,128 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head th:replace="~{fragments/head :: head('Login - BiUrSite')}"></head>
+  <body
+    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <main
+      class="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4"
+    >
+      <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 mb-4"
+          >
+            <i
+              class="fas fa-user text-2xl text-indigo-600 dark:text-indigo-400"
+            ></i>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            Welcome back
+          </h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Sign in to continue to BiUrSite
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700"
+        >
+          <div
+            th:if="${param.error}"
+            class="mb-6 flex items-center gap-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 p-4 text-red-800 dark:text-red-200"
+          >
+            <i class="fas fa-exclamation-circle text-lg"></i>
+            <span>Invalid username or password.</span>
+          </div>
+          <div
+            th:if="${param.logout}"
+            class="mb-6 flex items-center gap-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 p-4 text-blue-800 dark:text-blue-200"
+          >
+            <i class="fas fa-info-circle text-lg"></i>
+            <span>You have been logged out.</span>
+          </div>
+          <div
+            th:if="${param.registered}"
+            class="mb-6 flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 p-4 text-green-800 dark:text-green-200"
+          >
+            <i class="fas fa-check-circle text-lg"></i>
+            <span>Registration successful! Please log in.</span>
+          </div>
+
+          <form th:action="@{/login}" method="post" class="space-y-5">
+            <input
+              type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
+            <div>
+              <label
+                for="username"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                >Username</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-user text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  required
+                  autofocus
+                  placeholder="Enter your username"
+                  class="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                >Password</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-lock text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  placeholder="Enter your password"
+                  class="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center justify-center gap-2"
+            >
+              <i class="fas fa-sign-in-alt"></i>
+              Sign In
+            </button>
+          </form>
+        </div>
+
+        <p class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          Don't have an account?
+          <a
+            th:href="@{/register}"
+            class="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition"
+            >Create one now</a
+          >
+        </p>
+      </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </body>
+</html>

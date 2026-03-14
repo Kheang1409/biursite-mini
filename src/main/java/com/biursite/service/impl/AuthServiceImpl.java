@@ -1,54 +1,70 @@
 package com.biursite.service.impl;
 
+import com.biursite.domain.user.repository.UserRepositoryPort;
 import com.biursite.dto.AuthRequest;
 import com.biursite.dto.AuthResponse;
+import com.biursite.dto.CreateUserRequest;
 import com.biursite.dto.RegisterRequest;
-import com.biursite.entity.Role;
-import com.biursite.entity.User;
-import com.biursite.repository.UserRepository;
+import com.biursite.domain.user.entity.User;
+import com.biursite.exception.BadRequestException;
+import com.biursite.exception.UnauthorizedException;
 import com.biursite.security.JwtUtil;
-import com.biursite.service.AuthService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.biursite.service.AuthService;
+import com.biursite.application.user.usecase.CreateUserUseCase;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepositoryPort userRepository;
+    private final CreateUserUseCase createUserUseCase;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthServiceImpl(UserRepositoryPort userRepository,
+                           CreateUserUseCase createUserUseCase,
+                           JwtUtil jwtUtil,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.createUserUseCase = createUserUseCase;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthResponse login(AuthRequest request) {
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException("Invalid credentials"));
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+        
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
         }
+        
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token);
     }
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        // simple check
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username taken");
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new BadRequestException("Username taken");
         }
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email taken");
+        
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("Email taken");
         }
-        User u = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_USER)
-                .createdAt(Instant.now())
-                .build();
-        userRepository.save(u);
-        String token = jwtUtil.generateToken(u.getUsername(), u.getRole().name());
+        
+        var cmd = new com.biursite.application.user.dto.CreateUserCommand(
+            request.getUsername(),
+            request.getEmail(),
+            request.getPassword()
+        );
+        User created = createUserUseCase.execute(cmd);
+
+        String token = jwtUtil.generateToken(created.getUsername(), created.getRole().name());
         return new AuthResponse(token);
     }
 }

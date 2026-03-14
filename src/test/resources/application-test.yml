@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    driver-class-name: org.h2.Driver
+    username: ${DB_USERNAME_TEST:sa}
+    password: ${DB_PASSWORD_TEST:}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+    database-platform: org.hibernate.dialect.H2Dialect
+app:
+  jwt:
+    secret: ${JWT_SECRET_TEST:test-secret-key-which-is-long-enough-for-hmac-sha256-testing}
+    expiration-ms: 3600000
+server:
+  port: 0

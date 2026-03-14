@@ -1,0 +1,21 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+  lang="en"
+>
+  <!-- Head delegate: accepts same `title` parameter and forwards it -->
+  <head th:fragment="head(title)">
+    <th:block th:replace="~{fragments/head :: head(title=${title})}"></th:block>
+  </head>
+
+  <!-- Navbar delegate -->
+  <nav th:fragment="navbar">
+    <th:block th:replace="~{fragments/navbar :: navbar}"></th:block>
+  </nav>
+
+  <!-- Footer delegate -->
+  <footer th:fragment="footer">
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+  </footer>
+</html>
