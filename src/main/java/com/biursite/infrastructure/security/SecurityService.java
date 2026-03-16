@@ -30,7 +30,15 @@ public class SecurityService implements CurrentUserPort {
         if (auth == null || auth.getName() == null) {
             return Optional.empty();
         }
-        return userRepository.findByUsername(auth.getName()).map(u -> new CurrentUser(u.getId(), u.getUsername(), u.getEmail(), u.getRole() == null ? null : u.getRole().name(), u.getBanned(), u.getCreatedAt()));
+        return userRepository.findByUsername(auth.getName()).map(u -> new CurrentUser(
+            u.getId(),
+            u.getUsername(),
+            u.getEmail(),
+            u.getRole() == null ? null : u.getRole().name(),
+            u.getBanned(),
+            u.getDeactivated(),
+            u.getCreatedAt()
+        ));
     }
 
     @Override

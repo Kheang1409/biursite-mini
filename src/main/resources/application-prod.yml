@@ -2,7 +2,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    show-sql: true
 
 # Production profile — Hibernate validates schema
 logging:
-  level: {}
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.biursite: INFO

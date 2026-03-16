@@ -22,8 +22,8 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
            countQuery = "SELECT count(p) FROM PostEntity p")
     Page<PostEntity> findAllWithAuthor(Pageable pageable);
 
-        @Query(value = "SELECT p FROM PostEntity p JOIN FETCH p.author WHERE p.banned = false",
-            countQuery = "SELECT count(p) FROM PostEntity p WHERE p.banned = false")
+        @Query(value = "SELECT p FROM PostEntity p JOIN FETCH p.author WHERE p.banned = false AND p.author.deactivated = false",
+            countQuery = "SELECT count(p) FROM PostEntity p WHERE p.banned = false AND p.author.deactivated = false")
         Page<PostEntity> findAllWithAuthorVisible(Pageable pageable);
 
     @Query("SELECT p FROM PostEntity p JOIN FETCH p.author WHERE p.id = :id")

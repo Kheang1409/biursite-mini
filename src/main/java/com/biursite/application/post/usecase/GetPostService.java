@@ -14,6 +14,9 @@ public class GetPostService implements GetPostUseCase {
     public PostView execute(Long id) {
         var post = postRepository.findByIdWithAuthor(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        if (Boolean.TRUE.equals(post.getBanned()) || (post.getAuthor() != null && Boolean.TRUE.equals(post.getAuthor().getDeactivated()))) {
+            throw new ResourceNotFoundException("Post", "id", id);
+        }
         return postViewMapper.toView(post);
     }
 }

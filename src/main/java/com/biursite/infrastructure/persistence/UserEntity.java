@@ -34,6 +34,10 @@ public class UserEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean banned = false;
 
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean deactivated = false;
+
     @Column(nullable = false)
     private Instant createdAt;
 }

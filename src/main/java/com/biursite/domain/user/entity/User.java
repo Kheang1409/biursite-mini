@@ -22,5 +22,8 @@ public class User {
     @Builder.Default
     private Boolean banned = false;
 
+    @Builder.Default
+    private Boolean deactivated = false;
+
     private Instant createdAt;
 }

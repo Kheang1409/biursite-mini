@@ -15,6 +15,7 @@ public final class UserEntityMapper {
                 .password(e.getPassword())
                 .role(e.getRole())
                 .banned(e.getBanned())
+                .deactivated(e.getDeactivated())
                 .createdAt(e.getCreatedAt())
                 .build();
     }
@@ -29,6 +30,7 @@ public final class UserEntityMapper {
                 .password(u.getPassword())
                 .role(u.getRole())
                 .banned(u.getBanned() == null ? Boolean.FALSE : u.getBanned())
+                .deactivated(u.getDeactivated() == null ? Boolean.FALSE : u.getDeactivated())
                 .createdAt(created)
                 .build();
     }

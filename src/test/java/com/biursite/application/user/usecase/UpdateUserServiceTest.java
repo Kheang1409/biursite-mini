@@ -35,7 +35,7 @@ class UpdateUserServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(u));
         when(passwordHasher.hash("np")).thenReturn("hp");
         when(userRepository.save(any())).thenReturn(u);
-        when(userDtoMapper.toDto(org.mockito.ArgumentMatchers.any())).thenReturn(new com.biursite.application.user.dto.UserDto(u.getId(), "new", "new@x", null, false, u.getCreatedAt()));
+        when(userDtoMapper.toDto(org.mockito.ArgumentMatchers.any())).thenReturn(new com.biursite.application.user.dto.UserDto(u.getId(), "new", "new@x", null, false, false, u.getCreatedAt()));
 
         UpdateUserRequest req = new UpdateUserRequest();
         req.setUsername("new");

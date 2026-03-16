@@ -613,23 +613,38 @@
         fetch("/posts/" + id + "/json")
           .then((r) => r.json())
           .then((data) => {
-            document.getElementById("readPostTitle").innerText = data.title;
+            // Support both shapes: { author: { username: ... } } and flat { authorUsername: ... }
+            const authorUsername =
+              data.author && data.author.username
+                ? data.author.username
+                : data.authorUsername || "Unknown";
+            const avatarChar = authorUsername
+              ? authorUsername.charAt(0).toUpperCase()
+              : "U";
+            document.getElementById("readPostTitle").innerText =
+              data.title || "";
             document.getElementById("readPostMeta").innerHTML =
               '<div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-medium">' +
-              data.author.username.charAt(0).toUpperCase() +
+              avatarChar +
               '</div><span class="font-medium text-gray-700 dark:text-gray-200">' +
-              data.author.username +
+              authorUsername +
               '</span><span class="text-gray-400">·</span><span>' +
-              new Date(data.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              }) +
+              (data.createdAt
+                ? new Date(data.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "") +
               "</span></div>";
             document.getElementById("readPostContent").innerText =
               data.content || "";
             document.getElementById("readPostModal").classList.remove("hidden");
             document.body.style.overflow = "hidden";
+          })
+          .catch((err) => {
+            console.error("Failed to load post JSON", err);
+            alert("Failed to load post. Please try again.");
           });
       }
 
@@ -675,6 +690,24 @@
             }
           })
           .catch(() => alert("Edit failed. Please try again."));
+      }
+
+      // Inline Read more toggle
+      function toggleInlineRead(id) {
+        const preview = document.getElementById("preview-" + id);
+        const full = document.getElementById("full-" + id);
+        const btn = document.getElementById("readMoreBtn-" + id);
+        if (!btn || !preview || !full) return;
+        if (full.classList.contains("hidden")) {
+          full.classList.remove("hidden");
+          preview.classList.add("hidden");
+          btn.innerHTML = 'Show less <i class="fas fa-arrow-left text-xs"></i>';
+        } else {
+          full.classList.add("hidden");
+          preview.classList.remove("hidden");
+          btn.innerHTML =
+            'Read more <i class="fas fa-arrow-right text-xs"></i>';
+        }
       }
 
       // Post menu toggle

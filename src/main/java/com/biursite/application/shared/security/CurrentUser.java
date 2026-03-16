@@ -8,14 +8,16 @@ public final class CurrentUser {
     private final String email;
     private final String role;
     private final Boolean banned;
+    private final Boolean deactivated;
     private final Instant createdAt;
 
-    public CurrentUser(Long id, String username, String email, String role, Boolean banned, Instant createdAt) {
+    public CurrentUser(Long id, String username, String email, String role, Boolean banned, Boolean deactivated, Instant createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.role = role;
         this.banned = banned;
+        this.deactivated = deactivated;
         this.createdAt = createdAt;
     }
 
@@ -32,6 +34,8 @@ public final class CurrentUser {
     public String getRole() { return role; }
 
     public Boolean getBanned() { return banned; }
+
+    public Boolean getDeactivated() { return deactivated; }
 
     public Instant getCreatedAt() { return createdAt; }
 }

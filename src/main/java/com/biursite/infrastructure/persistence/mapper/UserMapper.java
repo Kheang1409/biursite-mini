@@ -13,6 +13,7 @@ public final class UserMapper {
                 .email(user.getEmail())
                 .role(user.getRole() == null ? null : user.getRole().name())
                 .banned(Boolean.TRUE.equals(user.getBanned()))
+                .deactivated(Boolean.TRUE.equals(user.getDeactivated()))
                 .createdAt(user.getCreatedAt())
                 .build();
     }

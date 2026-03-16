@@ -14,5 +14,6 @@ public class UserDto {
     private String email;
     private String role;
     private Boolean banned;
+    private Boolean deactivated;
     private Instant createdAt;
 }

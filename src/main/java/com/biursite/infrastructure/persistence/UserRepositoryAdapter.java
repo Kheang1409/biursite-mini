@@ -97,8 +97,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         if (user.getCreatedAt() == null) {
             user.setCreatedAt(Instant.now());
         }
+        org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UserRepositoryAdapter.class);
+        LOG.info("Saving user id={} username={} deactivated={}", user.getId(), user.getUsername(), user.getDeactivated());
         UserEntity ent = UserEntityMapper.toEntity(user);
         UserEntity saved = userRepository.save(ent);
+        LOG.info("User persisted id={} username={} deactivated={}", saved.getId(), saved.getUsername(), saved.getDeactivated());
         return UserEntityMapper.toDomain(saved);
     }
 

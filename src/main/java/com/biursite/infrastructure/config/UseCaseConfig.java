@@ -22,6 +22,8 @@ import com.biursite.application.user.usecase.RegisterUserService;
 import com.biursite.application.user.usecase.RegisterUserUseCase;
 import com.biursite.application.user.usecase.UpdateUserService;
 import com.biursite.application.user.usecase.UpdateUserUseCase;
+import com.biursite.application.user.usecase.DeactivateAccountService;
+import com.biursite.application.user.usecase.DeactivateAccountUseCase;
 import com.biursite.domain.shared.event.DomainEventPublisher;
 import com.biursite.domain.post.repository.PostRepositoryPort;
 import com.biursite.domain.user.repository.UserRepositoryPort;
@@ -54,6 +56,11 @@ public class UseCaseConfig {
     @Bean
     public GetUserProfilePostsUseCase getUserProfilePostsUseCase(PostRepositoryPort postRepository, UserRepositoryPort userRepository) {
         return new GetUserProfilePostsService(postRepository, userRepository, postViewMapper());
+    }
+
+    @Bean
+    public DeactivateAccountUseCase deactivateAccountUseCase(UserRepositoryPort userRepository) {
+        return new DeactivateAccountService(userRepository);
     }
 
     @Bean

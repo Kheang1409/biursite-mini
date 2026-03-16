@@ -11,6 +11,7 @@ public class UserProfileView {
     private Instant joinedAt;
     private String email;
     private String role;
+    private Boolean deactivated;
     private List<PostView> posts;
 
     public UserProfileView() {}
@@ -24,10 +25,12 @@ public class UserProfileView {
 
     public String getEmail() { return email; }
     public String getRole() { return role; }
+    public Boolean getDeactivated() { return deactivated; }
     public Instant getCreatedAt() { return joinedAt; }
 
     public void setEmail(String email) { this.email = email; }
     public void setRole(String role) { this.role = role; }
+    public void setDeactivated(Boolean deactivated) { this.deactivated = deactivated; }
 
     public String getUsername() { return username; }
     public String getBio() { return bio; }

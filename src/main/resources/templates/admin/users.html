@@ -93,6 +93,12 @@
                     username
                   </h2>
                   <span
+                    th:if="${user.username == #authentication.name}"
+                    class="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                  >
+                    You
+                  </span>
+                  <span
                     class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                     th:text="${user.role}"
                   >
@@ -122,7 +128,7 @@
 
               <div class="flex items-center gap-2">
                 <form
-                  th:if="${!user.banned}"
+                  th:if="${!user.banned and user.username != #authentication.name}"
                   th:action="@{/admin/users/{id}/ban(id=${user.id})}"
                   method="post"
                 >
@@ -140,7 +146,7 @@
                 </form>
 
                 <form
-                  th:if="${user.banned}"
+                  th:if="${user.banned and user.username != #authentication.name}"
                   th:action="@{/admin/users/{id}/unban(id=${user.id})}"
                   method="post"
                 >
@@ -225,6 +231,7 @@
       let isLoading = false;
       const csrfName = /*[[${_csrf.parameterName}]]*/ "_csrf";
       const csrfToken = /*[[${_csrf.token}]]*/ "";
+      const currentUsername = /*[[${#authentication.name}]]*/ "";
       const qInput = document.getElementById("qInput");
       const statusSelect = document.getElementById("statusSelect");
       const clearFiltersBtn = document.getElementById("clearFilters");
@@ -279,6 +286,18 @@
           year: "numeric",
         });
 
+        const isSelf = user.username === currentUsername;
+        const actionHtml = isSelf
+          ? `<div class="px-3 py-2 text-sm text-gray-500">You</div>`
+          : `
+            <form action="${actionPath}" method="post">
+              <input type="hidden" name="${escapeHtml(csrfName)}" value="${escapeHtml(csrfToken)}" />
+              <button type="submit" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium ${actionStyle} text-white transition-colors duration-200">
+                <i class="fas ${actionIcon} mr-2"></i>${actionLabel}
+              </button>
+            </form>
+          `;
+
         return `
           <article data-user-id="${user.id}" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
             <div class="flex items-start justify-between gap-4">
@@ -287,17 +306,13 @@
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">${escapeHtml(user.username)}</h2>
                   <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">${escapeHtml(user.role)}</span>
                   ${statusBadge}
+                  ${isSelf ? '<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">You</span>' : ""}
                 </div>
                 <p class="text-sm text-gray-600 dark:text-gray-300">${escapeHtml(user.email)}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined ${joined}</p>
               </div>
               <div class="flex items-center gap-2">
-                <form action="${actionPath}" method="post">
-                  <input type="hidden" name="${escapeHtml(csrfName)}" value="${escapeHtml(csrfToken)}" />
-                  <button type="submit" class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium ${actionStyle} text-white transition-colors duration-200">
-                    <i class="fas ${actionIcon} mr-2"></i>${actionLabel}
-                  </button>
-                </form>
+                ${actionHtml}
               </div>
             </div>
           </article>

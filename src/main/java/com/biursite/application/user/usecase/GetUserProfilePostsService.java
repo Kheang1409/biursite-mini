@@ -36,6 +36,10 @@ public class GetUserProfilePostsService implements GetUserProfilePostsUseCase {
         profile.setBio(null);
         profile.setJoinedAt(user.getCreatedAt());
         profile.setPosts(postViews);
+        // include email and role so templates can display them
+        profile.setEmail(user.getEmail());
+        profile.setRole(user.getRole() != null ? user.getRole().name() : null);
+        profile.setDeactivated(user.getDeactivated());
 
         return profile;
     }

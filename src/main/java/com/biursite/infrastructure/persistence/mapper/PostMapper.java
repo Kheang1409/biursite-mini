@@ -18,7 +18,9 @@ public final class PostMapper {
             p.getAuthor() == null ? null : p.getAuthor().getUsername(),
             p.getAuthor() == null ? null : p.getAuthor().getId(),
             p.getCreatedAt(),
-            p.getUpdatedAt()
+            p.getUpdatedAt(),
+            p.getBanned(),
+            p.getBanReason()
         );
     }
 
