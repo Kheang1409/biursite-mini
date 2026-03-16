@@ -6,8 +6,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  flyway:
-    enabled: false
 
 # Development-specific settings (overrides application.yml)
 logging:

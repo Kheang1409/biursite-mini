@@ -2,10 +2,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-  flyway:
-    enabled: false
 
-# Production profile — Flyway is authoritative and Hibernate validates schema
+# Production profile — Hibernate validates schema
 logging:
-  level:
-    org.flywaydb.core: DEBUG
+  level: {}

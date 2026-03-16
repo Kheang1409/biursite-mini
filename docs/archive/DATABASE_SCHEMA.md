@@ -251,20 +251,6 @@ databaseChangeLog:
       # ... posts table definition
 ```
 
-### Using Flyway (Alternative)
-
-```yaml
-spring:
-  flyway:
-    locations: classpath:db/migration
-```
-
-**Files**:
-
-- `db/migration/V1__Create_users_table.sql`
-- `db/migration/V2__Create_posts_table.sql`
-- `db/migration/V3__Create_indexes.sql`
-
 ---
 
 ## Constraints & Foreign Keys

@@ -25,30 +25,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
       db:
         condition: service_healthy
-      flyway:
-        condition: service_completed_successfully
     restart: on-failure
-
-  flyway:
-    image: flyway/flyway:12
-    # Run migrations against the 'db' service, read SQL from host folder
-    command: -url=jdbc:postgresql://db:5432/biursite -user=${DB_USERNAME} -password=${DB_PASSWORD} -locations=filesystem:/flyway/sql migrate
-    environment:
-      FLYWAY_URL: jdbc:postgresql://db:5432/biursite
-      FLYWAY_USER: ${DB_USERNAME}
-      FLYWAY_PASSWORD: ${DB_PASSWORD}
-      FLYWAY_LOCATIONS: filesystem:/flyway/sql
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_BASELINE_VERSION: "0"
-    volumes:
-      - ./src/main/resources/db/migration:/flyway/sql:ro
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: "no"
 
 volumes:
   db-data:

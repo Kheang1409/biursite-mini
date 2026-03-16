@@ -76,7 +76,7 @@ Indexes:
 Best practices:
 
 - Use JOIN FETCH queries in repositories to prevent N+1 (examples in archive).
-- Use Liquibase or Flyway for production migrations (recommended).
+- Use a migration tool (Liquibase recommended) for production migrations.
 
 ---
 
@@ -160,7 +160,7 @@ Troubleshooting tips: check logs (`docker logs` or `mvn spring-boot:run`), verif
 - [ ] `mvn clean package` builds successfully (CI runs full tests)
 - [ ] All tests pass (`mvn test`) — ArchUnit tests run in CI
 - [ ] `JWT_SECRET` and DB credentials provided via environment
-- [ ] Database migrations configured (Liquibase/Flyway)
+- [ ] Database migrations configured (Liquibase)
 - [ ] HTTPS configured (SSL certs and `server.ssl.*`)
 - [ ] Logging/monitoring/alerts in place (metrics, error tracking)
 - [ ] Backup strategy for DB
