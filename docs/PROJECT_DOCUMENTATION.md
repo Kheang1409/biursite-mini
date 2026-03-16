@@ -1,6 +1,6 @@
 # BiUrSite — Project Documentation (Consolidated)
 
-Last updated: 2026-03-09
+Last updated: 2026-03-15
 
 This consolidated document replaces the multiple top-level docs and contains the essential information developers and stakeholders need: architecture summary, UI overview, database schema, API reference, security highlights, setup & production instructions, and readiness checklist. Full original documents have been archived to `docs/archive/` for reference.
 
@@ -126,8 +126,11 @@ Prerequisites:
 Quick start (development):
 
 ```bash
-# copy env template
+# copy env template (cross-platform)
+# macOS / Linux
 cp .env.example .env
+# Windows PowerShell
+Copy-Item .env.example .env
 # set required env vars in .env or shell
 # build (skip tests for fast local run if desired)
 mvn -DskipTests clean package

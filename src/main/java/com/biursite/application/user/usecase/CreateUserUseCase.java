@@ -5,13 +5,12 @@ import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.entity.User;
 import com.biursite.domain.user.repository.UserRepositoryPort;
 import com.biursite.application.user.dto.CreateUserCommand;
+import com.biursite.application.user.dto.UserDto;
 import com.biursite.domain.user.event.UserRegisteredEvent;
 import com.biursite.domain.user.service.PasswordHasher;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
-@Component
 public class CreateUserUseCase {
     private final UserRepositoryPort userRepository;
     private final PasswordHasher passwordHasher;
@@ -25,7 +24,7 @@ public class CreateUserUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    public User execute(CreateUserCommand command) {
+    public UserDto execute(CreateUserCommand command) {
         User user = User.builder()
                 .username(command.getUsername())
                 .email(command.getEmail())
@@ -42,6 +41,13 @@ public class CreateUserUseCase {
                 saved.getEmail()
         ));
 
-        return saved;
+        return UserDto.builder()
+                .id(saved.getId())
+                .username(saved.getUsername())
+                .email(saved.getEmail())
+                .role(saved.getRole().name())
+                .banned(saved.getBanned())
+                .createdAt(saved.getCreatedAt())
+                .build();
     }
 }

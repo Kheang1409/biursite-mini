@@ -2,7 +2,9 @@ package com.biursite.application.user.usecase;
 
 import com.biursite.application.user.dto.CreateUserCommand;
 import com.biursite.domain.shared.event.DomainEventPublisher;
+import com.biursite.application.user.dto.UserDto;
 import com.biursite.domain.user.entity.User;
+import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.repository.UserRepositoryPort;
 import com.biursite.domain.user.service.PasswordHasher;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,11 +35,11 @@ class CreateUserUseCaseTest {
     void createsUser_and_publishesEvent() {
         when(passwordHasher.hash("secret")).thenReturn("hashed");
 
-        User saved = User.builder().id(1L).username("u").email("e@x.com").password("hashed").build();
+        User saved = User.builder().id(1L).username("u").email("e@x.com").password("hashed").role(Role.ROLE_USER).build();
         when(userRepository.save(any())).thenReturn(saved);
 
         CreateUserCommand cmd = new CreateUserCommand("u", "e@x.com", "secret");
-        User result = useCase.execute(cmd);
+        UserDto result = useCase.execute(cmd);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());

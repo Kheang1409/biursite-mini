@@ -20,6 +20,20 @@ docker compose up --build -d
 # visit http://localhost:8080
 ```
 
+Note: `docker compose` reads `.env` when present. Copy the example `.env.example` to `.env` before running compose.
+
+Cross-platform copy examples:
+
+```bash
+# macOS / Linux
+cp .env.example .env
+```
+
+```powershell
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
 Run locally (without Docker)
 
 1. Ensure a Postgres instance is available and configure connection properties or environment variables.
@@ -37,6 +51,20 @@ Important configuration
 - `app.jwt.secret` — JWT secret used by `JwtUtil`. Provide via env `JWT_SECRET` (min 32 characters).
 - `SPRING_DATASOURCE_URL` or `DB_*` env vars — database connection (see `.env.example`).
 - `SERVER_PORT` — overrides `server.port`.
+
+Setting environment variables (examples):
+
+```bash
+# macOS / Linux
+export JWT_SECRET='your-32-char-secret'
+export SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5432/biursite'
+```
+
+```powershell
+# Windows PowerShell
+$env:JWT_SECRET='your-32-char-secret'
+$env:SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5432/biursite'
+```
 
 Docker compose summary
 
@@ -78,6 +106,48 @@ Run all tests:
 ```bash
 mvn test
 ```
+
+Production & CI/CD
+
+- Build and run full verification (tests + package):
+
+```bash
+mvn -DskipTests=false clean verify
+```
+
+- Build the jar:
+
+```bash
+mvn -DskipTests=false clean package
+```
+
+- Build Docker image (locally):
+
+```bash
+docker build -t biursite:latest .
+```
+
+- Run with Docker (compose is provided):
+
+```bash
+docker compose up --build -d
+```
+
+Required environment variables (production)
+
+- `JWT_SECRET` : JWT secret (no default) — provide as env; recommend >=32 chars for HS256.
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` : database connection.
+- `SERVER_PORT` : optional, default 8080.
+- `LOG_LEVEL`, `LOG_LEVEL_APP` : optional logging levels.
+
+CI/CD
+
+- A GitHub Actions workflow is included at `.github/workflows/build.yml` — it runs `mvn verify` and builds the Docker image on push and PR to `main`/`master`.
+
+Notes
+
+- No production secrets are committed. `application.yml` relies on environment variables and does not include default production secrets.
+- Logs are emitted as structured JSON to stdout in production via `logback-spring.xml`.
 
 Docs and internals
 

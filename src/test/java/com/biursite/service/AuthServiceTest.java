@@ -1,13 +1,13 @@
 package com.biursite.service;
 
 import com.biursite.domain.user.repository.UserRepositoryPort;
-import com.biursite.dto.*;
+import com.biursite.infrastructure.web.dto.*;
 import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.entity.User;
-import com.biursite.exception.BadRequestException;
-import com.biursite.exception.UnauthorizedException;
-import com.biursite.security.JwtUtil;
-import com.biursite.service.impl.AuthServiceImpl;
+import com.biursite.application.shared.exception.BadRequestException;
+import com.biursite.application.shared.exception.UnauthorizedException;
+import com.biursite.infrastructure.security.JwtUtil;
+import com.biursite.infrastructure.service.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +79,8 @@ class AuthServiceTest {
     void register_newUser_returnsToken() {
         when(userRepository.existsByUsername("bob")).thenReturn(false);
         when(userRepository.existsByEmail("bob@test.com")).thenReturn(false);
-        User createdUser = User.builder()
-            .id(2L).username("bob").email("bob@test.com").password("encoded").role(Role.ROLE_USER).build();
+        com.biursite.application.user.dto.UserDto createdUser = com.biursite.application.user.dto.UserDto.builder()
+            .id(2L).username("bob").email("bob@test.com").role("ROLE_USER").build();
         when(createUserUseCase.execute(any(com.biursite.application.user.dto.CreateUserCommand.class))).thenReturn(createdUser);
         when(jwtUtil.generateToken("bob", "ROLE_USER")).thenReturn("jwt-token-bob");
 

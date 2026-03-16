@@ -4,7 +4,7 @@ import com.biursite.domain.user.entity.Role;
 import com.biursite.infrastructure.persistence.UserEntity;
 import com.biursite.infrastructure.persistence.PostRepository;
 import com.biursite.infrastructure.persistence.UserRepository;
-import com.biursite.security.JwtUtil;
+import com.biursite.infrastructure.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +66,7 @@ class AuthControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Username taken"));
+                .andExpect(jsonPath("$.message").value("Username is already taken"));
     }
 
     @Test

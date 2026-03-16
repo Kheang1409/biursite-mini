@@ -24,3 +24,13 @@ logging:
   level:
     root: ${LOG_LEVEL:INFO}
     com.biursite: ${LOG_LEVEL_APP:INFO}
+
+# Management / Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never

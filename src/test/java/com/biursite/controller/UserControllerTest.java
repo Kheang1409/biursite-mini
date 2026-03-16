@@ -5,18 +5,19 @@ import com.biursite.application.user.usecase.GetUserByIdUseCase;
 import com.biursite.application.user.usecase.GetAllUsersUseCase;
 import com.biursite.application.user.usecase.UpdateUserUseCase;
 import com.biursite.application.user.usecase.BanUnbanDeleteUserUseCases;
-import com.biursite.security.SecurityService;
+import com.biursite.infrastructure.security.SecurityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.biursite.security.JwtUtil;
+import com.biursite.infrastructure.security.JwtUtil;
+import com.biursite.infrastructure.web.UserControllerAdapter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest(UserControllerAdapter.class)
 class UserControllerTest {
     @Autowired
     private MockMvc mvc;

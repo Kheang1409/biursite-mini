@@ -211,7 +211,7 @@ class EndToEndFlowTest {
                                 {"username":"dup","email":"other@test.com","password":"pass"}
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Username taken"));
+                .andExpect(jsonPath("$.message").value("Username is already taken"));
 
         // Same email
         mockMvc.perform(post("/api/auth/register")
@@ -220,6 +220,6 @@ class EndToEndFlowTest {
                                 {"username":"other","email":"dup@test.com","password":"pass"}
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Email taken"));
+                .andExpect(jsonPath("$.message").value("Email is already registered"));
     }
 }

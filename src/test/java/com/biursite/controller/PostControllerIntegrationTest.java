@@ -6,7 +6,7 @@ import com.biursite.domain.user.entity.User;
 import com.biursite.infrastructure.persistence.UserEntity;
 import com.biursite.infrastructure.persistence.PostRepository;
 import com.biursite.infrastructure.persistence.UserRepository;
-import com.biursite.security.JwtUtil;
+import com.biursite.infrastructure.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

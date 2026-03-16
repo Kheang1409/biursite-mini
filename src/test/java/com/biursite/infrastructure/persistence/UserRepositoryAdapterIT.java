@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -73,12 +72,10 @@ class UserRepositoryAdapterIT {
             adapter.save(u);
         }
 
-        var page = adapter.findAll(PageRequest.of(0, 3));
-        assertThat(page.getSize()).isEqualTo(3);
-        assertThat(page.hasNext()).isTrue();
+        var pageList = adapter.findAll(0, 3);
+        assertThat(pageList.size()).isEqualTo(3);
 
-        var bannedPage = adapter.findAllWithFilter(null, true, PageRequest.of(0, 10));
-        List<User> banned = bannedPage.getContent();
+        List<User> banned = adapter.findAllWithFilter(null, true, 0, 10);
         assertThat(banned).allMatch(User::getBanned);
     }
 }

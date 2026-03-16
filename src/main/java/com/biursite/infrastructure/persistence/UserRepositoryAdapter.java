@@ -2,8 +2,6 @@ package com.biursite.infrastructure.persistence;
 
 import com.biursite.domain.user.entity.User;
 import com.biursite.domain.user.repository.UserRepositoryPort;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +39,19 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable).map(UserEntityMapper::toDomain);
+    public List<User> findAll(int page, int size) {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<UserEntity> springPage = userRepository.findAll(spReq);
+        return springPage.stream().map(UserEntityMapper::toDomain).toList();
     }
 
     @Override
-    public Page<User> findAllWithFilter(String query, Boolean banned, Pageable pageable) {
+    public long countAll() {
+        return userRepository.count();
+    }
+
+    @Override
+    public List<User> findAllWithFilter(String query, Boolean banned, int page, int size) {
         org.springframework.data.jpa.domain.Specification<UserEntity> spec = (root, cq, cb) -> {
             java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
             if (query != null && !query.isBlank()) {
@@ -60,7 +65,29 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
             }
             return preds.isEmpty() ? cb.conjunction() : cb.and(preds.toArray(new jakarta.persistence.criteria.Predicate[0]));
         };
-        return userRepository.findAll(spec, pageable).map(UserEntityMapper::toDomain);
+
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<UserEntity> springPage = userRepository.findAll(spec, spReq);
+        return springPage.stream().map(UserEntityMapper::toDomain).toList();
+    }
+
+    @Override
+    public long countAllWithFilter(String query, Boolean banned) {
+        org.springframework.data.jpa.domain.Specification<UserEntity> spec = (root, cq, cb) -> {
+            java.util.List<jakarta.persistence.criteria.Predicate> preds = new java.util.ArrayList<>();
+            if (query != null && !query.isBlank()) {
+                String like = "%" + query.toLowerCase() + "%";
+                jakarta.persistence.criteria.Predicate p1 = cb.like(cb.lower(root.get("username")), like);
+                jakarta.persistence.criteria.Predicate p2 = cb.like(cb.lower(root.get("email")), like);
+                preds.add(cb.or(p1, p2));
+            }
+            if (banned != null) {
+                preds.add(cb.equal(root.get("banned"), banned));
+            }
+            return preds.isEmpty() ? cb.conjunction() : cb.and(preds.toArray(new jakarta.persistence.criteria.Predicate[0]));
+        };
+
+        return userRepository.count(spec);
     }
 
     @Override

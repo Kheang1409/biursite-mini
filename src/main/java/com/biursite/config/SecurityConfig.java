@@ -1,6 +1,6 @@
 package com.biursite.config;
 
-import com.biursite.security.JwtFilter;
+import com.biursite.infrastructure.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -55,6 +55,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     // Public (view) routes
                     .requestMatchers("/", "/login", "/register", "/posts", "/posts/*", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/error", "/error/**", "/404", "/403", "/500", "/posts/*/json").permitAll()
+                    // Actuator health/info should be publicly readable for orchestration
+                    .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                     // Protected MVC routes (require authentication)
                     .requestMatchers("/posts/new", "/posts/*/edit", "/posts/*/delete", "/profile", "/profile/**").authenticated()
                     // Admin routes

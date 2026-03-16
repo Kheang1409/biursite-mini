@@ -2,10 +2,7 @@ package com.biursite.application.user.usecase;
 
 import com.biursite.domain.user.entity.User;
 import com.biursite.domain.user.repository.UserRepositoryPort;
-import com.biursite.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
-
-@Component
+import com.biursite.application.shared.exception.ResourceNotFoundException;
 public class BanUnbanDeleteUserUseCases {
     private final UserRepositoryPort userRepository;
 

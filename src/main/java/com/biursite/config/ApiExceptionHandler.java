@@ -1,9 +1,9 @@
 package com.biursite.config;
 
-import com.biursite.exception.BadRequestException;
-import com.biursite.exception.ForbiddenException;
-import com.biursite.exception.ResourceNotFoundException;
-import com.biursite.exception.UnauthorizedException;
+import com.biursite.application.shared.exception.BadRequestException;
+import com.biursite.application.shared.exception.ForbiddenException;
+import com.biursite.application.shared.exception.ResourceNotFoundException;
+import com.biursite.application.shared.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

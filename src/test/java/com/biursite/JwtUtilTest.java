@@ -1,6 +1,6 @@
 package com.biursite;
 
-import com.biursite.security.JwtUtil;
+import com.biursite.infrastructure.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;

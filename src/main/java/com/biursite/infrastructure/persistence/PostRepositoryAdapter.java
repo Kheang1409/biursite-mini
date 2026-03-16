@@ -3,14 +3,12 @@ package com.biursite.infrastructure.persistence;
 import com.biursite.domain.post.repository.PostRepositoryPort;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.user.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.biursite.application.shared.pagination.Page;
+import com.biursite.application.shared.pagination.PageImpl;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class PostRepositoryAdapter implements PostRepositoryPort {
@@ -34,15 +32,49 @@ public class PostRepositoryAdapter implements PostRepositoryPort {
     public List<Post> findAll() {
         return PostEntityMapper.toDomainList(postRepository.findAll());
     }
-
     @Override
-    public Page<Post> findAllWithAuthor(Pageable pageable) {
-        return PostEntityMapper.toDomainPage(postRepository.findAllWithAuthor(pageable));
+    public List<Post> findAllWithAuthor(int page, int size) {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthor(spReq);
+        return PostEntityMapper.toDomainList(springPage.getContent());
+    }
+
+    // Adapter-level convenience: return application Page<Post>
+    public Page<Post> findAllWithAuthorPage(int page, int size) {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthor(spReq);
+        List<Post> content = PostEntityMapper.toDomainList(springPage.getContent());
+        return new PageImpl<>(content, springPage.getNumber(), springPage.getSize(), springPage.getTotalElements());
     }
 
     @Override
-    public Page<Post> findAllWithAuthorVisible(Pageable pageable) {
-        return PostEntityMapper.toDomainPage(postRepository.findAllWithAuthorVisible(pageable));
+    public long countAllWithAuthor() {
+        // Use a count query via Spring Data page request to get total elements
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(0, 1);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthor(spReq);
+        return springPage.getTotalElements();
+    }
+
+    @Override
+    public List<Post> findAllWithAuthorVisible(int page, int size) {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthorVisible(spReq);
+        return PostEntityMapper.toDomainList(springPage.getContent());
+    }
+
+    // Adapter-level convenience: return application Page<Post>
+    public Page<Post> findAllWithAuthorVisiblePage(int page, int size) {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthorVisible(spReq);
+        List<Post> content = PostEntityMapper.toDomainList(springPage.getContent());
+        return new PageImpl<>(content, springPage.getNumber(), springPage.getSize(), springPage.getTotalElements());
+    }
+
+    @Override
+    public long countAllWithAuthorVisible() {
+        org.springframework.data.domain.Pageable spReq = org.springframework.data.domain.PageRequest.of(0, 1);
+        org.springframework.data.domain.Page<PostEntity> springPage = postRepository.findAllWithAuthorVisible(spReq);
+        return springPage.getTotalElements();
     }
 
     @Override

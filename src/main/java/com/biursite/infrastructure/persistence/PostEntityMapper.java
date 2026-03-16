@@ -3,8 +3,6 @@ package com.biursite.infrastructure.persistence;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.user.entity.User;
 import java.time.Instant;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,10 +43,5 @@ public final class PostEntityMapper {
 
     public static List<Post> toDomainList(List<PostEntity> list) {
         return list.stream().map(PostEntityMapper::toDomain).collect(Collectors.toList());
-    }
-
-    public static Page<Post> toDomainPage(Page<PostEntity> page) {
-        List<Post> content = toDomainList(page.getContent());
-        return new PageImpl<>(content, page.getPageable(), page.getTotalElements());
     }
 }

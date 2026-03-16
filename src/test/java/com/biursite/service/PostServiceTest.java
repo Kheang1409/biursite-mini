@@ -3,25 +3,22 @@ package com.biursite.service;
 import com.biursite.domain.post.repository.PostRepositoryPort;
 import com.biursite.domain.shared.event.DomainEventPublisher;
 import com.biursite.domain.user.repository.UserRepositoryPort;
-import com.biursite.dto.CreatePostRequest;
-import com.biursite.dto.PostDTO;
-import com.biursite.dto.UpdatePostRequest;
+import com.biursite.infrastructure.web.dto.CreatePostRequest;
+import com.biursite.infrastructure.web.dto.PostDTO;
+import com.biursite.infrastructure.web.dto.UpdatePostRequest;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.entity.User;
 import com.biursite.infrastructure.persistence.UserEntity;
-import com.biursite.exception.ForbiddenException;
-import com.biursite.exception.ResourceNotFoundException;
-import com.biursite.service.impl.PostServiceImpl;
+import com.biursite.application.shared.exception.ForbiddenException;
+import com.biursite.application.shared.exception.ResourceNotFoundException;
+import com.biursite.infrastructure.service.PostServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.Instant;
 import java.util.List;
@@ -67,8 +64,7 @@ class PostServiceTest {
 
     @Test
     void getAll_returnsPaginatedDTOs() {
-        Page<Post> page = new PageImpl<>(List.of(testPost));
-        when(postRepository.findAllWithAuthorVisible(any(PageRequest.class))).thenReturn(page);
+        when(postRepository.findAllWithAuthorVisible(anyInt(), anyInt())).thenReturn(List.of(testPost));
 
         List<PostDTO> result = postService.getAll(0, 20);
         assertThat(result).hasSize(1);

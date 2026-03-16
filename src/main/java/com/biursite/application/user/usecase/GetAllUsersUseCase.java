@@ -1,20 +1,21 @@
 package com.biursite.application.user.usecase;
 
-import com.biursite.domain.user.entity.User;
+import com.biursite.application.user.dto.UserDto;
+import com.biursite.application.user.mapper.UserDtoMapper;
 import com.biursite.domain.user.repository.UserRepositoryPort;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class GetAllUsersUseCase {
     private final UserRepositoryPort userRepository;
+    private final UserDtoMapper userDtoMapper;
 
-    public GetAllUsersUseCase(UserRepositoryPort userRepository) {
+    public GetAllUsersUseCase(UserRepositoryPort userRepository, UserDtoMapper userDtoMapper) {
         this.userRepository = userRepository;
+        this.userDtoMapper = userDtoMapper;
     }
 
-    public List<User> execute() {
-        return userRepository.findAll();
+    public List<UserDto> execute() {
+        return userRepository.findAll().stream().map(userDtoMapper::toDto).toList();
     }
 }

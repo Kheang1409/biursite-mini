@@ -1,8 +1,6 @@
 package com.biursite.domain.user.repository;
 
 import com.biursite.domain.user.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,8 +10,10 @@ public interface UserRepositoryPort {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     List<User> findAll();
-    Page<User> findAll(Pageable pageable);
-    Page<User> findAllWithFilter(String query, Boolean banned, Pageable pageable);
+    List<User> findAll(int page, int size);
+    long countAll();
+    List<User> findAllWithFilter(String query, Boolean banned, int page, int size);
+    long countAllWithFilter(String query, Boolean banned);
     User save(User user);
     void delete(User user);
     boolean existsByUsername(String username);

@@ -86,14 +86,14 @@
               <div class="flex items-center gap-3">
                 <div
                   class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0"
-                  th:text="${post.author.username.substring(0,1).toUpperCase()}"
+                  th:text="${post.authorUsername != null ? post.authorUsername.substring(0,1).toUpperCase() : 'U'}"
                 >
                   U
                 </div>
                 <div>
                   <p
                     class="font-medium text-gray-900 dark:text-white"
-                    th:text="${post.author.username}"
+                    th:text="${post.authorUsername}"
                   >
                     Author
                   </p>
@@ -108,7 +108,7 @@
 
               <!-- Post Actions Menu (Owner only) -->
               <div
-                th:if="${#strings.equals(#authentication.name, post.author.username)}"
+                th:if="${#strings.equals(#authentication.name, post.authorUsername)}"
               >
                 <div class="relative">
                   <button
