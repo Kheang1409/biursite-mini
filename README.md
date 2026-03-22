@@ -159,7 +159,3 @@ Contributing
 2. Create a feature branch
 3. Run tests locally
 4. Open a PR with a clear description
-
-License
-
-No license file is included. Add one if you plan to publish this project.
