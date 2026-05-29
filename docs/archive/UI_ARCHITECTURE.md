@@ -4,7 +4,7 @@
 - Spring Boot: 3.5.11
 - Database: PostgreSQL 15 (docker-compose)
 - Tailwind: CDN (used in templates)
-- Thymeleaf fragments: `fragments/head`, `fragments/navbar`, `fragments/footer`, `fragments/layout` (the `layout` fragment is used for shared page layout and theme init)
+- Thymeleaf fragments: `fragments/head`, `fragments/navbar`, `fragments/footer`, `fragments/layout` (the `layout` fragment is a delegating wrapper kept for compatibility)
 - Verified against: `pom.xml`, `docker-compose.yml`, `src/main/resources/application.yml`
 
 # BiUrSite UI Architecture

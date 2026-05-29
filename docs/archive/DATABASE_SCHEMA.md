@@ -4,7 +4,7 @@
 - Spring Boot: 3.5.11
 - Database: PostgreSQL 15 (docker-compose)
 - Tailwind: CDN (used in templates)
-- Thymeleaf fragments: `fragments/head`, `fragments/navbar`, `fragments/footer`, `fragments/layout` (the `layout` fragment is present and used by templates)
+- Thymeleaf fragments: `fragments/head`, `fragments/navbar`, `fragments/footer`, `fragments/layout` (the `layout` fragment is present as a delegating wrapper)
 - Verified against: `pom.xml`, `docker-compose.yml`, `src/main/resources/application.yml`
 
 # BiUrSite Database Schema & Design
@@ -15,9 +15,7 @@
 **Host**: Configurable via environment (`DB_HOST`)  
 **Port**: 5432 (default)  
 **Tables**: 2 main tables + system tables  
-**Indexes**: 3 custom indexes
-
----
+ **Indexes**: repository-driven query support and unique constraints; this doc summarizes the current JPA entities and query patterns
 
 ## Entity Relationship Diagram
 
@@ -26,10 +24,13 @@
 │                          USERS                              │
 ├─────────────────────────────────────────────────────────────┤
 │ id (PK)              │ BIGSERIAL PRIMARY KEY                │
+│ version              │ BIGINT                               │
 │ username             │ VARCHAR(255) NOT NULL UNIQUE         │
 │ email                │ VARCHAR(255) NOT NULL UNIQUE         │
 │ password             │ VARCHAR(255) NOT NULL                │
-│ role                 │ VARCHAR(50) NOT NULL DEFAULT 'USER'  │
+│ role                 │ VARCHAR(50) NOT NULL                 │
+│ banned               │ BOOLEAN NOT NULL DEFAULT false       │
+│ deactivated          │ BOOLEAN NOT NULL DEFAULT false       │
 │ created_at           │ TIMESTAMP NOT NULL                   │
 └─────────────────────────────────────────────────────────────┘
            ▲
@@ -41,11 +42,14 @@
 │                          POSTS                              │
 ├─────────────────────────────────────────────────────────────┤
 │ id (PK)              │ BIGSERIAL PRIMARY KEY                │
+│ version              │ BIGINT                               │
 │ title                │ VARCHAR(255) NOT NULL                │
 │ content              │ TEXT                                 │
 │ author_id (FK)       │ BIGINT NOT NULL REFERENCES users(id) │
 │ created_at           │ TIMESTAMP NOT NULL                   │
 │ updated_at           │ TIMESTAMP                            │
+│ banned               │ BOOLEAN NOT NULL DEFAULT false       │
+│ ban_reason           │ VARCHAR(1024)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -79,6 +83,7 @@ CREATE TABLE users (
 - **role**: User role - `ROLE_USER` or `ROLE_ADMIN`
 - **created_at**: Account creation timestamp (UTC)
 - **banned**: Boolean flag indicating whether the user is banned (default false)
+- **deactivated**: Boolean flag indicating whether the user account is deactivated (default false)
 
 **Constraints**:
 

@@ -11,7 +11,7 @@ This document explains the project's security implementation details: JWT handli
 
 Ensure `JWT_SECRET` is at least 32 characters to satisfy the runtime check in `JwtUtil`.
 
-## JwtUtil (com.biursite.security.JwtUtil)
+## JwtUtil (com.biursite.infrastructure.security.JwtUtil)
 
 Responsibilities:
 
@@ -38,7 +38,7 @@ String username = jwtUtil.getUsernameFromToken(token);
 String role = jwtUtil.getRoleFromToken(token);
 ```
 
-## JwtFilter (com.biursite.security.JwtFilter)
+## JwtFilter (com.biursite.infrastructure.security.JwtFilter)
 
 Responsibilities:
 
@@ -50,7 +50,7 @@ Notes:
 - The filter does not produce error responses itself; it silently ignores invalid/missing tokens and allows subsequent security machinery to handle access control.
 - The filter expects roles to be stored as a string claim (e.g., `ROLE_USER`).
 
-## SecurityService (com.biursite.security.SecurityService)
+## SecurityService (com.biursite.infrastructure.security.SecurityService)
 
 Responsibilities:
 
@@ -72,7 +72,7 @@ User user = securityService.getCurrentUser().orElseThrow(...);
 ## Integration with SecurityConfig
 
 - `SecurityConfig` registers two filter chains:
-  - API chain (order 1): `securityMatcher("/api/**")` — CSRF disabled, `SessionCreationPolicy.STATELESS`, adds `JwtFilter` before `UsernamePasswordAuthenticationFilter`.
-  - MVC chain (order 2): session-based form login with CSRF via `CookieCsrfTokenRepository`.
+  - API chain (order 1): `securityMatcher("/api/**")` - CSRF disabled, `SessionCreationPolicy.STATELESS`, permits `/api/auth/**`, requires authentication for `/api/posts/**` and `/api/users/**`, and adds `JwtFilter` before `UsernamePasswordAuthenticationFilter`.
+  - MVC chain (order 2): session-based form login with CSRF via `CookieCsrfTokenRepository`, public access for `/`, `/login`, `/register`, `/posts`, `/posts/*`, `/posts/*/json`, and the error pages, plus `/admin/**` restricted to `ROLE_ADMIN`.
 
 This split ensures the REST API uses stateless JWT auth while server-rendered pages use session cookies and CSRF protection.

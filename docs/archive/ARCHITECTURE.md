@@ -4,7 +4,7 @@ Last verified: 2026-03-09
 
 ## Overview
 
-BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separation between business rules (domain), orchestration (application/service), and technical concerns (infrastructure). The web layer (controllers) is an adapter into the application.
+BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separation between business rules (domain), orchestration (application), and technical concerns (infrastructure). The web layer (controllers) is an adapter into the application.
 
 ## Layers & Responsibilities
 
@@ -12,8 +12,8 @@ BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separat
   - Contains business concepts: entities, value objects, domain events, domain services, and repository _ports_ (interfaces).
   - Must be plain Java (no Spring annotations or technical frameworks) so it is testable and independent.
 
-- service (application layer)
-  - Orchestration and application use-cases implemented as service interfaces and implementations.
+- application layer
+  - Orchestration and application use-cases implemented as interfaces and services in `com.biursite.application`.
   - Translates controller inputs into domain operations and coordinates multiple domain operations and events.
   - Depends on domain ports; may define DTOs for boundary translation.
 
@@ -24,7 +24,7 @@ BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separat
 
 - controller / web
   - Web adapters: REST controllers, MVC controllers, request/response mapping, HTTP concerns (status codes, validation errors).
-  - Must depend only on service (application) interfaces — controllers call services, not infrastructure.
+  - Must depend only on application-layer interfaces — controllers call use cases and queries, not infrastructure.
 
 ## Dependency Direction Rules
 
@@ -35,18 +35,17 @@ BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separat
 
 ## Where to place new code
 
-- Entities: `com.biursite.entity` (currently used for JPA entities); prefer keeping domain types lightweight and framework-free where possible.
-- Value objects & domain events: `com.biursite.domain.*`
+- Domain entities and value objects: `com.biursite.domain.*`
 - Repository ports (interfaces): `com.biursite.domain.*.repository`
-- Adapters / implementations: `com.biursite.infrastructure.*` (e.g., `infrastructure.persistence`, `infrastructure.events`)
-- Service / application logic: `com.biursite.service` (interfaces) and `com.biursite.service.impl` (implementations)
-- Controllers: `com.biursite.controller` and `com.biursite.controller.web`
-- DTOs: `com.biursite.dto` (or `com.biursite.application.dto`) — used across the application boundary
+- Application use cases, queries, DTOs, and ports: `com.biursite.application.*`
+- Adapters / implementations: `com.biursite.infrastructure.*` (e.g., `infrastructure.persistence`, `infrastructure.events`, `infrastructure.security`, `infrastructure.web`)
+- Controllers: `com.biursite.infrastructure.web`
+- Web DTOs: `com.biursite.infrastructure.web.dto`
 
 ## Typical request flow (example)
 
 1. Controller (`com.biursite.controller`) receives HTTP request and maps to a DTO.
-2. Controller calls Application Service interface (`com.biursite.service.PostService`).
+2. Controller calls an application-layer interface (`com.biursite.application.post.usecase.*` or `com.biursite.application.query.*`).
 3. Service orchestrates use-case, validating inputs and invoking domain operations (entities, domain services).
 4. Service uses a repository _port_ (e.g., `domain.post.repository.PostRepositoryPort`) to persist or load domain objects.
 5. Infrastructure adapter (`com.biursite.infrastructure.persistence.PostRepositoryAdapter`) implements the port and delegates to JPA (`Spring Data` repository) to perform DB operations.
@@ -60,7 +59,7 @@ BiUrSite follows a layered Ports & Adapters (Hexagonal) style with clear separat
 
 ## Enforcement checklist
 
-- [ ] Controllers import only `com.biursite.service` and `com.biursite.dto` packages.
+- [ ] Controllers import only application-layer DTOs and ports, and should not import infrastructure packages.
 - [ ] Domain packages contain no `org.springframework.*` imports.
 - [ ] Infrastructure adapters implement the domain/service ports and contain framework-specific annotations.
 
@@ -80,7 +79,7 @@ Rules enforced by CI
 
 Where the check runs
 
-- Implemented in `scripts/check_architecture.sh` and executed by GitHub Actions workflow `.github/workflows/architecture-enforce.yml` on `push` and `pull_request` to `main` (or `master`).
+- Implemented in `scripts/check_architecture.sh` and run in CI when the architecture check is enabled.
 
 How developers can fix violations
 

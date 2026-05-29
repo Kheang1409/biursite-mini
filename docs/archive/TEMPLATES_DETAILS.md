@@ -10,13 +10,13 @@ This file describes the Thymeleaf fragments and front-end templates used by the 
 
 - `navbar.html` — includes the dark-mode toggle button (ARIA labelled), login/register links, and navigation to posts/profile. The toggle button calls `toggleTheme()` and updates icons (elements with ids `theme-icon-sun` and `theme-icon-moon`).
 
-- `layout.html` — a shared layout fragment used by pages to include the navbar, footer and a content region. Templates typically use `th:replace="fragments/layout :: layout"` to inject page content.
+- `layout.html` — a delegating compatibility wrapper that forwards to `fragments/head`, `fragments/navbar`, and `fragments/footer`. Current page templates replace those fragments directly, but the wrapper remains for older templates.
 
 - `footer.html` — simple footer fragment.
 
 ## Templates (examples)
 
-- `login.html`, `register.html`, `posts/list.html`, `posts/view.html`, `posts/form.html`, `profile.html`, `admin/users.html` — server-rendered pages using the fragments above.
+- `login.html`, `register.html`, `posts/list.html`, `profile.html`, `error.html`, `error/403.html`, `error/404.html`, `error/500.html`, and `admin/users.html` — server-rendered pages using the fragments above.
 
 ## Styling
 
