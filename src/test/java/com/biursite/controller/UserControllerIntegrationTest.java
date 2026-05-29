@@ -6,7 +6,6 @@ import com.biursite.infrastructure.persistence.UserEntity;
 import com.biursite.infrastructure.persistence.PostRepository;
 import com.biursite.infrastructure.persistence.UserRepository;
 import com.biursite.infrastructure.security.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
     @Autowired private UserRepository userRepository;
     @Autowired private PostRepository postRepository;
     @Autowired private PasswordEncoder passwordEncoder;

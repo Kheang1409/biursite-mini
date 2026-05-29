@@ -41,17 +41,13 @@ class EndToEndFlowTest {
     @Test
     void fullUserAndPostLifecycle() throws Exception {
         // 1. Register user "alice"
-        MvcResult registerResult = mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"username":"alice","email":"alice@test.com","password":"secret123"}
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty())
-                .andReturn();
-
-        String aliceToken = objectMapper.readTree(registerResult.getResponse().getContentAsString())
-                .get("token").asText();
+                .andExpect(jsonPath("$.token").isNotEmpty());
 
         // 2. Login with same credentials
         MvcResult loginResult = mockMvc.perform(post("/api/auth/login")

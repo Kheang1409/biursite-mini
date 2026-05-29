@@ -33,7 +33,7 @@ class GetPostServiceTest {
         User author = User.builder().id(2L).username("alice").build();
         Post p = Post.builder().id(1L).title("t").content("c").author(author).createdAt(Instant.now()).build();
         when(postRepository.findByIdWithAuthor(1L)).thenReturn(Optional.of(p));
-        when(postViewMapper.toView(p)).thenReturn(new PostView(p.getId(), p.getTitle(), p.getContent(), p.getAuthor().getUsername(), p.getAuthor().getId(), p.getCreatedAt(), p.getUpdatedAt()));
+        when(postViewMapper.toView(p)).thenReturn(new PostView(p.getId(), null, p.getTitle(), p.getContent(), p.getAuthor().getUsername(), p.getAuthor().getId(), p.getCreatedAt(), p.getUpdatedAt()));
 
         PostView view = service.execute(1L);
 

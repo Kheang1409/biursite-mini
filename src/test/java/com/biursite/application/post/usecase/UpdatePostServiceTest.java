@@ -33,7 +33,7 @@ class UpdatePostServiceTest {
         Post saved = Post.builder().id(1L).title("new").content("c2").createdAt(Instant.now()).build();
         when(postRepository.save(existing)).thenReturn(saved);
 
-        UpdatePostCommand cmd = new UpdatePostCommand(1L, "new", "c2", null);
+        UpdatePostCommand cmd = new UpdatePostCommand(1L, "new", "c2", 1L, null);
         service.execute(cmd);
 
         verify(postRepository).save(existing);

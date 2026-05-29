@@ -2,7 +2,6 @@ package com.biursite.integration;
 
 import com.biursite.infrastructure.persistence.PostEntity;
 import com.biursite.domain.user.entity.Role;
-import com.biursite.domain.user.entity.User;
 import com.biursite.infrastructure.persistence.PostRepository;
 import com.biursite.infrastructure.persistence.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,7 @@ public class PostIntegrationTest {
             .banned(false)
             .build();
         var savedEntity = userRepository.save(uEntity);
-        User savedUser = com.biursite.domain.user.entity.User.builder()
+        com.biursite.domain.user.entity.User.builder()
             .id(savedEntity.getId())
             .username(savedEntity.getUsername())
             .email(savedEntity.getEmail())

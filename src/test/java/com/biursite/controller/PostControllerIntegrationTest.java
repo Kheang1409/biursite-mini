@@ -7,7 +7,6 @@ import com.biursite.infrastructure.persistence.UserEntity;
 import com.biursite.infrastructure.persistence.PostRepository;
 import com.biursite.infrastructure.persistence.UserRepository;
 import com.biursite.infrastructure.security.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PostControllerIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
     @Autowired private UserRepository userRepository;
     @Autowired private PostRepository postRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private JwtUtil jwtUtil;
 
         private User alice;
-        private User bob;
-        private User admin;
         private UserEntity aliceEntity;
-        private UserEntity bobEntity;
-        private UserEntity adminEntity;
     private String aliceToken;
     private String bobToken;
     private String adminToken;
@@ -55,25 +49,9 @@ class PostControllerIntegrationTest {
                 .username("alice").email("alice@test.com")
                 .password(passwordEncoder.encode("pass"))
                 .role(Role.ROLE_USER).createdAt(Instant.now()).build());
-        bobEntity = userRepository.save(UserEntity.builder()
-                .username("bob").email("bob@test.com")
-                .password(passwordEncoder.encode("pass"))
-                .role(Role.ROLE_USER).createdAt(Instant.now()).build());
-        adminEntity = userRepository.save(UserEntity.builder()
-                .username("admin").email("admin@test.com")
-                .password(passwordEncoder.encode("pass"))
-                .role(Role.ROLE_ADMIN).createdAt(Instant.now()).build());
-
         alice = com.biursite.domain.user.entity.User.builder()
                 .id(aliceEntity.getId()).username(aliceEntity.getUsername()).email(aliceEntity.getEmail())
                 .password(aliceEntity.getPassword()).role(aliceEntity.getRole()).createdAt(aliceEntity.getCreatedAt()).build();
-        bob = com.biursite.domain.user.entity.User.builder()
-                .id(bobEntity.getId()).username(bobEntity.getUsername()).email(bobEntity.getEmail())
-                .password(bobEntity.getPassword()).role(bobEntity.getRole()).createdAt(bobEntity.getCreatedAt()).build();
-        admin = com.biursite.domain.user.entity.User.builder()
-                .id(adminEntity.getId()).username(adminEntity.getUsername()).email(adminEntity.getEmail())
-                .password(adminEntity.getPassword()).role(adminEntity.getRole()).createdAt(adminEntity.getCreatedAt()).build();
-
         aliceToken = jwtUtil.generateToken("alice", "ROLE_USER");
         bobToken = jwtUtil.generateToken("bob", "ROLE_USER");
         adminToken = jwtUtil.generateToken("admin", "ROLE_ADMIN");

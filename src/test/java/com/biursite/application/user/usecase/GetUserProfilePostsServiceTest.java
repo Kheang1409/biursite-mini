@@ -41,7 +41,7 @@ class GetUserProfilePostsServiceTest {
         Post p = Post.builder().id(5L).title("t").author(u).createdAt(Instant.now()).build();
         when(postRepository.findByAuthorOrderByCreatedAtDesc(u)).thenReturn(List.of(p));
 
-        when(postViewMapper.toViewList(org.mockito.ArgumentMatchers.anyList())).thenReturn(List.of(new PostView(p.getId(), p.getTitle(), p.getContent(), u.getUsername(), u.getId(), p.getCreatedAt(), p.getUpdatedAt())));
+        when(postViewMapper.toViewList(org.mockito.ArgumentMatchers.anyList())).thenReturn(List.of(new PostView(p.getId(), null, p.getTitle(), p.getContent(), u.getUsername(), u.getId(), p.getCreatedAt(), p.getUpdatedAt())));
 
         UserProfileView profile = service.execute(3L, PageRequest.of(0,10));
         assertNotNull(profile);

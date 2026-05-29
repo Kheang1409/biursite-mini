@@ -9,7 +9,6 @@ import com.biursite.infrastructure.web.dto.UpdatePostRequest;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.entity.User;
-import com.biursite.infrastructure.persistence.UserEntity;
 import com.biursite.application.shared.exception.ForbiddenException;
 import com.biursite.application.shared.exception.ResourceNotFoundException;
 import com.biursite.infrastructure.service.PostServiceImpl;
@@ -39,7 +38,6 @@ class PostServiceTest {
     private PostServiceImpl postService;
 
     private User author;
-    private UserEntity authorEntity;
     private Post testPost;
 
     @BeforeEach
@@ -48,14 +46,6 @@ class PostServiceTest {
                 .id(1L).username("alice").email("alice@test.com")
                 .password("enc").role(Role.ROLE_USER).createdAt(Instant.now())
                 .build();
-        authorEntity = UserEntity.builder()
-            .id(author.getId())
-            .username(author.getUsername())
-            .email(author.getEmail())
-            .password(author.getPassword())
-            .role(author.getRole())
-            .createdAt(author.getCreatedAt())
-            .build();
         testPost = Post.builder()
             .id(10L).title("Test Title").content("Test content")
             .author(author).createdAt(Instant.now())
@@ -117,7 +107,7 @@ class PostServiceTest {
         when(postRepository.findById(10L)).thenReturn(Optional.of(testPost));
         when(postRepository.save(any(Post.class))).thenReturn(testPost);
 
-        UpdatePostRequest req = new UpdatePostRequest("Updated Title", "Updated Content");
+        UpdatePostRequest req = new UpdatePostRequest(null, "Updated Title", "Updated Content");
         PostDTO dto = postService.update(10L, req, 1L); // userId = 1 = author
 
         assertThat(dto.getTitle()).isEqualTo("Updated Title");
@@ -127,7 +117,7 @@ class PostServiceTest {
     void update_byNonOwner_throwsForbidden() {
         when(postRepository.findById(10L)).thenReturn(Optional.of(testPost));
 
-        UpdatePostRequest req = new UpdatePostRequest("Hacked", "Hacked");
+        UpdatePostRequest req = new UpdatePostRequest(null, "Hacked", "Hacked");
         assertThatThrownBy(() -> postService.update(10L, req, 999L))
                 .isInstanceOf(ForbiddenException.class)
                 .hasMessageContaining("Not allowed");

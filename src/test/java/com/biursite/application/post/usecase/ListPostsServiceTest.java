@@ -3,7 +3,6 @@ package com.biursite.application.post.usecase;
 import com.biursite.application.post.dto.PostView;
 import com.biursite.application.post.mapper.PostViewMapper;
 import com.biursite.application.shared.pagination.Page;
-import com.biursite.application.shared.pagination.PageImpl;
 import com.biursite.application.shared.pagination.PageRequest;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.post.repository.PostRepositoryPort;
@@ -36,7 +35,7 @@ class ListPostsServiceTest {
         var domainList = List.of(p);
         when(postRepository.findAllWithAuthorVisible(org.mockito.ArgumentMatchers.anyInt(), org.mockito.ArgumentMatchers.anyInt())).thenReturn(domainList);
         when(postRepository.countAllWithAuthorVisible()).thenReturn(1L);
-        when(postViewMapper.toView(p)).thenReturn(new PostView(p.getId(), p.getTitle(), p.getContent(), null, null, p.getCreatedAt(), p.getUpdatedAt()));
+        when(postViewMapper.toView(p)).thenReturn(new PostView(p.getId(), null, p.getTitle(), p.getContent(), null, null, p.getCreatedAt(), p.getUpdatedAt()));
 
         Page<PostView> result = service.execute(PageRequest.of(0,10));
 
