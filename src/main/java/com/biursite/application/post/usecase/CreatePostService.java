@@ -6,11 +6,14 @@ import com.biursite.domain.post.repository.PostRepositoryPort;
 import com.biursite.domain.user.repository.UserRepositoryPort;
 import com.biursite.domain.shared.event.DomainEventPublisher;
 import com.biursite.domain.post.event.PostCreatedEvent;
+import com.biursite.application.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
 @RequiredArgsConstructor
+@Transactional
 public class CreatePostService implements CreatePostUseCase {
     private final PostRepositoryPort postRepository;
     private final UserRepositoryPort userRepository;
@@ -19,14 +22,9 @@ public class CreatePostService implements CreatePostUseCase {
     @Override
     public Long execute(CreatePostCommand cmd) {
         var author = userRepository.findById(cmd.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", cmd.getAuthorId()));
 
-        var post = Post.builder()
-                .title(cmd.getTitle())
-                .content(cmd.getContent())
-                .author(author)
-                .createdAt(Instant.now())
-                .build();
+        var post = Post.create(cmd.getTitle(), cmd.getContent(), author, Instant.now());
 
         var saved = postRepository.save(post);
 

@@ -6,20 +6,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import com.biursite.infrastructure.web.dto.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", 401);
-        body.put("error", "Unauthorized");
-        body.put("message", authException == null ? "Unauthorized" : authException.getMessage());
-        response.getWriter().write(new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(body));
+        ApiResponse<Void> body = ApiResponse.failure(
+                HttpServletResponse.SC_UNAUTHORIZED,
+                "Unauthorized",
+                authException == null ? "Unauthorized" : authException.getMessage(),
+                request.getRequestURI()
+        );
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        response.getWriter().write(mapper.writeValueAsString(body));
     }
 }

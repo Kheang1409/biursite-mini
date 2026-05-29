@@ -10,6 +10,7 @@ import com.biursite.domain.user.event.UserRegisteredEvent;
 import com.biursite.domain.user.service.PasswordHasher;
 
 import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CreateUserUseCase {
     private final UserRepositoryPort userRepository;
@@ -24,14 +25,15 @@ public class CreateUserUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    public UserDto execute(CreateUserCommand command) {
-        User user = User.builder()
-                .username(command.getUsername())
-                .email(command.getEmail())
-                .password(passwordHasher.hash(command.getPassword()))
-                .role(Role.ROLE_USER)
-                .createdAt(Instant.now())
-                .build();
+        @Transactional
+        public UserDto execute(CreateUserCommand command) {
+        User user = User.register(
+                command.getUsername(),
+                command.getEmail(),
+                passwordHasher.hash(command.getPassword()),
+                Role.ROLE_USER,
+                Instant.now()
+        );
 
         User saved = userRepository.save(user);
 
@@ -43,6 +45,7 @@ public class CreateUserUseCase {
 
         return UserDto.builder()
                 .id(saved.getId())
+                .version(saved.getVersion())
                 .username(saved.getUsername())
                 .email(saved.getEmail())
                 .role(saved.getRole().name())

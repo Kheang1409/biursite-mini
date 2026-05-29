@@ -32,6 +32,10 @@ import com.biursite.application.post.mapper.PostViewMapper;
 import com.biursite.application.user.mapper.UserDtoMapper;
 import com.biursite.infrastructure.persistence.mapper.PostViewMapperImpl;
 import com.biursite.infrastructure.persistence.mapper.UserDtoMapperImpl;
+import com.biursite.infrastructure.observability.TimedGetPostUseCase;
+import com.biursite.infrastructure.observability.TimedGetUserPageUseCase;
+import com.biursite.infrastructure.observability.TimedListPostsUseCase;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,8 +43,9 @@ import org.springframework.context.annotation.Configuration;
 public class UseCaseConfig {
 
     @Bean
-    public GetUserPageUseCase getUserPageUseCase(UserRepositoryPort userRepository) {
-        return new GetUserPageService(userRepository, userDtoMapper());
+    public GetUserPageUseCase getUserPageUseCase(UserRepositoryPort userRepository, MeterRegistry meterRegistry) {
+        GetUserPageUseCase core = new GetUserPageService(userRepository, userDtoMapper());
+        return new TimedGetUserPageUseCase(core, meterRegistry);
     }
 
     @Bean
@@ -64,8 +69,8 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public UpdateUserUseCase updateUserUseCase(UserRepositoryPort userRepository, PasswordHasher passwordHasher) {
-        return new UpdateUserService(userRepository, passwordHasher, userDtoMapper());
+    public UpdateUserUseCase updateUserUseCase(UserRepositoryPort userRepository, PasswordHasher passwordHasher, DomainEventPublisher eventPublisher) {
+        return new UpdateUserService(userRepository, passwordHasher, userDtoMapper(), eventPublisher);
     }
 
     @Bean
@@ -94,13 +99,15 @@ public class UseCaseConfig {
     }
 
     @Bean
-    public ListPostsUseCase listPostsUseCase(PostRepositoryPort postRepository) {
-        return new ListPostsService(postRepository, postViewMapper());
+    public ListPostsUseCase listPostsUseCase(PostRepositoryPort postRepository, MeterRegistry meterRegistry) {
+        ListPostsUseCase core = new ListPostsService(postRepository, postViewMapper());
+        return new TimedListPostsUseCase(core, meterRegistry);
     }
 
     @Bean
-    public GetPostUseCase getPostUseCase(PostRepositoryPort postRepository) {
-        return new GetPostService(postRepository, postViewMapper());
+    public GetPostUseCase getPostUseCase(PostRepositoryPort postRepository, MeterRegistry meterRegistry) {
+        GetPostUseCase core = new GetPostService(postRepository, postViewMapper());
+        return new TimedGetPostUseCase(core, meterRegistry);
     }
 
     @Bean

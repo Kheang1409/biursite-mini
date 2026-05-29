@@ -4,6 +4,7 @@ import java.time.Instant;
 
 public class PostView {
     private Long id;
+    private Long version;
     private String title;
     private String content;
     private String authorUsername;
@@ -15,8 +16,9 @@ public class PostView {
 
     public PostView() {}
 
-    public PostView(Long id, String title, String content, String authorUsername, Long authorId, Instant createdAt, Instant updatedAt) {
+    public PostView(Long id, Long version, String title, String content, String authorUsername, Long authorId, Instant createdAt, Instant updatedAt) {
         this.id = id;
+        this.version = version;
         this.title = title;
         this.content = content;
         this.authorUsername = authorUsername;
@@ -25,8 +27,9 @@ public class PostView {
         this.updatedAt = updatedAt;
     }
 
-    public PostView(Long id, String title, String content, String authorUsername, Long authorId, Instant createdAt, Instant updatedAt, Boolean banned, String banReason) {
+    public PostView(Long id, Long version, String title, String content, String authorUsername, Long authorId, Instant createdAt, Instant updatedAt, Boolean banned, String banReason) {
         this.id = id;
+        this.version = version;
         this.title = title;
         this.content = content;
         this.authorUsername = authorUsername;
@@ -38,6 +41,7 @@ public class PostView {
     }
 
     public Long getId() { return id; }
+    public Long getVersion() { return version; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public String getAuthorUsername() { return authorUsername; }
@@ -48,6 +52,7 @@ public class PostView {
     public String getBanReason() { return banReason; }
 
     public void setId(Long id) { this.id = id; }
+    public void setVersion(Long version) { this.version = version; }
     public void setTitle(String title) { this.title = title; }
     public void setContent(String content) { this.content = content; }
     public void setAuthorUsername(String authorUsername) { this.authorUsername = authorUsername; }

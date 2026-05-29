@@ -4,6 +4,7 @@ import com.biursite.domain.post.event.PostCreatedEvent;
 import com.biursite.domain.post.event.PostDeletedEvent;
 import com.biursite.domain.post.event.PostUpdatedEvent;
 import com.biursite.domain.user.event.UserRegisteredEvent;
+import com.biursite.domain.user.event.UserUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -19,6 +20,13 @@ public class DomainEventListeners {
     @Async("eventsExecutor")
     public void onUserRegistered(UserRegisteredEvent event) {
         log.info("User registered: id={}, username={}, email={}", 
+                event.getUserId(), event.getUsername(), event.getEmail());
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async("eventsExecutor")
+    public void onUserUpdated(UserUpdatedEvent event) {
+        log.info("User updated: id={}, username={}, email={}",
                 event.getUserId(), event.getUsername(), event.getEmail());
     }
 

@@ -5,8 +5,9 @@ import com.biursite.application.post.dto.UpdatePostCommand;
 import com.biursite.application.post.dto.PostView;
 import com.biursite.application.post.usecase.CreatePostUseCase;
 import com.biursite.application.post.usecase.DeletePostUseCase;
-import com.biursite.application.post.usecase.GetPostUseCase;
-import com.biursite.application.post.usecase.ListPostsUseCase;
+import com.biursite.application.query.GetPostQuery;
+import com.biursite.application.query.ListPostsQuery;
+import com.biursite.infrastructure.web.mapper.QueryDtoMapper;
 import com.biursite.application.post.usecase.UpdatePostUseCase;
 import com.biursite.application.shared.pagination.Page;
 import com.biursite.application.shared.pagination.PageRequest;
@@ -22,24 +23,24 @@ import jakarta.validation.Valid;
 
 @Controller
 public class PostPageControllerAdapter {
-    private final ListPostsUseCase listPostsUseCase;
+    private final ListPostsQuery listPostsQuery;
     private final CreatePostUseCase createPostUseCase;
     private final UpdatePostUseCase updatePostUseCase;
     private final DeletePostUseCase deletePostUseCase;
-    private final GetPostUseCase getPostUseCase;
+    private final GetPostQuery getPostQuery;
     private final CurrentUserPort currentUserPort;
 
-    public PostPageControllerAdapter(ListPostsUseCase listPostsUseCase,
+    public PostPageControllerAdapter(ListPostsQuery listPostsQuery,
                                      CreatePostUseCase createPostUseCase,
                                      UpdatePostUseCase updatePostUseCase,
                                      DeletePostUseCase deletePostUseCase,
-                                     GetPostUseCase getPostUseCase,
+                                     GetPostQuery getPostQuery,
                                      CurrentUserPort currentUserPort) {
-        this.listPostsUseCase = listPostsUseCase;
+        this.listPostsQuery = listPostsQuery;
         this.createPostUseCase = createPostUseCase;
         this.updatePostUseCase = updatePostUseCase;
         this.deletePostUseCase = deletePostUseCase;
-        this.getPostUseCase = getPostUseCase;
+        this.getPostQuery = getPostQuery;
         this.currentUserPort = currentUserPort;
     }
 
@@ -47,7 +48,13 @@ public class PostPageControllerAdapter {
     public String listPosts(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
                             Model model, java.security.Principal auth) {
-        Page<PostView> postPage = listPostsUseCase.execute(PageRequest.of(page, size));
+        var result = listPostsQuery.execute(null, PageRequest.of(page, size));
+        Page<PostView> postPage = new com.biursite.application.shared.pagination.PageImpl<>(
+            result.getContent().stream().map(QueryDtoMapper::toPostView).toList(),
+            result.getPageNumber(),
+            result.getPageSize(),
+            result.getTotalElements()
+        );
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
@@ -67,7 +74,7 @@ public class PostPageControllerAdapter {
     @GetMapping("/posts/{id}/json")
     @ResponseBody
     public PostView getPostJson(@PathVariable Long id) {
-        return getPostUseCase.execute(id);
+        return QueryDtoMapper.toPostView(getPostQuery.execute(id));
     }
 
     @GetMapping("/posts/new")
@@ -103,7 +110,7 @@ public class PostPageControllerAdapter {
             return "posts/edit";
         }
 
-        UpdatePostCommand cmd = new UpdatePostCommand(id, updatePostRequest.getTitle(), updatePostRequest.getContent(), currentUserPort.getCurrentUserId());
+        UpdatePostCommand cmd = new UpdatePostCommand(id, updatePostRequest.getTitle(), updatePostRequest.getContent(), currentUserPort.getCurrentUserId(), updatePostRequest.getVersion());
         try {
             updatePostUseCase.execute(cmd);
         } catch (IllegalStateException ex) {

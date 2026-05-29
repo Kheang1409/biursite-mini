@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class UpdateUserRequest {
+    private Long version;
+
     @NotBlank
     private String username;
 
@@ -19,4 +21,6 @@ public class UpdateUserRequest {
     public void setEmail(String email) { this.email = email; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }

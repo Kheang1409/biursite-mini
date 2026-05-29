@@ -4,11 +4,17 @@ import com.biursite.application.post.dto.UpdatePostCommand;
 import com.biursite.domain.post.repository.PostRepositoryPort;
 import com.biursite.domain.shared.event.DomainEventPublisher;
 import com.biursite.domain.post.event.PostUpdatedEvent;
+import com.biursite.application.shared.exception.ResourceNotFoundException;
+import com.biursite.domain.shared.exception.ConcurrencyConflictException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import jakarta.persistence.OptimisticLockException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
 @RequiredArgsConstructor
+@Transactional
 public class UpdatePostService implements UpdatePostUseCase {
     private final PostRepositoryPort postRepository;
     private final DomainEventPublisher eventPublisher;
@@ -16,24 +22,24 @@ public class UpdatePostService implements UpdatePostUseCase {
     @Override
     public void execute(UpdatePostCommand cmd) {
         var existing = postRepository.findById(cmd.getPostId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", cmd.getPostId()));
 
-        if (existing.getAuthor() == null) {
-            if (cmd.getCurrentUserId() != null) {
-                throw new IllegalStateException("Not allowed to edit this post");
-            }
-        } else {
-            if (!existing.getAuthor().getId().equals(cmd.getCurrentUserId())) {
-                throw new IllegalStateException("Not allowed to edit this post");
-            }
+        if (cmd.getVersion() != null && existing.getVersion() != null && !cmd.getVersion().equals(existing.getVersion())) {
+            throw new ConcurrencyConflictException("Post was updated by another request");
         }
 
-        existing.setTitle(cmd.getTitle());
-        existing.setContent(cmd.getContent());
-        existing.setUpdatedAt(Instant.now());
+        existing.updateBy(cmd.getCurrentUserId(), cmd.getTitle(), cmd.getContent(), Instant.now());
 
-        var saved = postRepository.save(existing);
+        var saved = saveWithConflictHandling(existing, "Post was updated by another request");
 
         eventPublisher.publish(new PostUpdatedEvent(saved.getId(), saved.getTitle(), cmd.getCurrentUserId()));
+    }
+
+    private com.biursite.domain.post.entity.Post saveWithConflictHandling(com.biursite.domain.post.entity.Post post, String message) {
+        try {
+            return postRepository.save(post);
+        } catch (ObjectOptimisticLockingFailureException | OptimisticLockException ex) {
+            throw new ConcurrencyConflictException(message);
+        }
     }
 }

@@ -13,6 +13,7 @@ public final class PostMapper {
         if (p == null) return null;
         return new PostView(
                 p.getId(),
+                p.getVersion(),
                 p.getTitle(),
                 p.getContent(),
             p.getAuthor() == null ? null : p.getAuthor().getUsername(),

@@ -25,12 +25,20 @@ logging:
     root: ${LOG_LEVEL:INFO}
     com.biursite: ${LOG_LEVEL_APP:INFO}
 
+query:
+  max-page-size: 100
+  search:
+    max-length: 200
+  features:
+    use-materialized-view: false
+    use-async-projections: false
+
 # Management / Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
   endpoint:
     health:
       show-details: never

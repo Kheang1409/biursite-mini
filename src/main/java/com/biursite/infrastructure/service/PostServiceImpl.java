@@ -14,7 +14,6 @@ import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.user.entity.User;
 import com.biursite.application.shared.exception.ResourceNotFoundException;
 import com.biursite.application.shared.exception.ForbiddenException;
-import com.biursite.application.shared.pagination.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

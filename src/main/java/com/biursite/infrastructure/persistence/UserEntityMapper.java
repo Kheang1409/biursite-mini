@@ -10,6 +10,7 @@ public final class UserEntityMapper {
         if (e == null) return null;
         return User.builder()
                 .id(e.getId())
+            .version(e.getVersion())
                 .username(e.getUsername())
                 .email(e.getEmail())
                 .password(e.getPassword())
@@ -25,6 +26,7 @@ public final class UserEntityMapper {
         Instant created = u.getCreatedAt() == null ? Instant.now() : u.getCreatedAt();
         return UserEntity.builder()
                 .id(u.getId())
+            .version(u.getVersion())
                 .username(u.getUsername())
                 .email(u.getEmail())
                 .password(u.getPassword())

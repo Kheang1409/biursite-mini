@@ -14,6 +14,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Objects;
+import org.springframework.lang.NonNull;
 
 @Controller
 public class CustomErrorController implements ErrorController {
@@ -24,7 +26,7 @@ public class CustomErrorController implements ErrorController {
     }
 
     @RequestMapping(value = "/error", produces = MediaType.TEXT_HTML_VALUE)
-    public String errorHtml(HttpServletRequest request, Model model) {
+    public String errorHtml(@NonNull HttpServletRequest request, Model model) {
         ServletWebRequest webRequest = new ServletWebRequest(request);
         Map<String, Object> attrs = this.errorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.defaults());
         Throwable throwable = this.errorAttributes.getError(webRequest);
@@ -45,7 +47,7 @@ public class CustomErrorController implements ErrorController {
     }
 
     @RequestMapping(value = "/error", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> errorJson(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> errorJson(@NonNull HttpServletRequest request) {
         ServletWebRequest webRequest = new ServletWebRequest(request);
         Map<String, Object> attrs = this.errorAttributes.getErrorAttributes(webRequest, ErrorAttributeOptions.defaults());
         Throwable throwable = this.errorAttributes.getError(webRequest);
@@ -55,6 +57,6 @@ public class CustomErrorController implements ErrorController {
             attrs.put("status", status);
             attrs.put("error", "Not Found");
         }
-        return ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON).body(attrs);
+        return ResponseEntity.status(status).contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON)).body(attrs);
     }
 }

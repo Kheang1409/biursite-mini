@@ -7,8 +7,11 @@ import com.biursite.domain.user.repository.UserRepositoryPort;
 import com.biursite.domain.user.service.PasswordHasher;
 import com.biursite.application.user.dto.CreateUserCommand;
 import lombok.RequiredArgsConstructor;
+import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional
 public class RegisterUserService implements RegisterUserUseCase {
     private final UserRepositoryPort userRepository;
     private final PasswordHasher passwordHasher;
@@ -22,12 +25,13 @@ public class RegisterUserService implements RegisterUserUseCase {
             throw new BadRequestException("Email is already registered");
         }
 
-        User user = User.builder()
-            .username(cmd.getUsername())
-            .email(cmd.getEmail())
-            .password(passwordHasher.hash(cmd.getPassword()))
-            .role(Role.ROLE_USER)
-            .build();
+        User user = User.register(
+            cmd.getUsername(),
+            cmd.getEmail(),
+            passwordHasher.hash(cmd.getPassword()),
+            Role.ROLE_USER,
+            Instant.now()
+        );
 
         return userRepository.save(user);
     }

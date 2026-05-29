@@ -9,6 +9,7 @@ import com.biursite.application.shared.pagination.Page;
 import com.biursite.application.shared.pagination.PageImpl;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.lang.NonNull;
 
 @Repository
 public class PostRepositoryAdapter implements PostRepositoryPort {
@@ -19,12 +20,12 @@ public class PostRepositoryAdapter implements PostRepositoryPort {
     }
 
     @Override
-    public Optional<Post> findById(Long id) {
+    public Optional<Post> findById(@NonNull Long id) {
         return postRepository.findById(id).map(PostEntityMapper::toDomain);
     }
 
     @Override
-    public Optional<Post> findByIdWithAuthor(Long id) {
+    public Optional<Post> findByIdWithAuthor(@NonNull Long id) {
         return postRepository.findByIdWithAuthor(id).map(PostEntityMapper::toDomain);
     }
 
@@ -78,20 +79,20 @@ public class PostRepositoryAdapter implements PostRepositoryPort {
     }
 
     @Override
-    public List<Post> findByAuthorOrderByCreatedAtDesc(User author) {
+    public List<Post> findByAuthorOrderByCreatedAtDesc(@NonNull User author) {
         var authorEntity = UserEntityMapper.toEntity(author);
         return PostEntityMapper.toDomainList(postRepository.findByAuthorOrderByCreatedAtDesc(authorEntity));
     }
 
     @Override
-    public Post save(Post post) {
+    public Post save(@NonNull Post post) {
         var ent = PostEntityMapper.toEntity(post);
-        var saved = postRepository.save(ent);
+        var saved = postRepository.saveAndFlush(ent);
         return PostEntityMapper.toDomain(saved);
     }
 
     @Override
-    public void delete(Post post) {
+    public void delete(@NonNull Post post) {
         var ent = PostEntityMapper.toEntity(post);
         postRepository.delete(ent);
     }

@@ -15,6 +15,7 @@ public final class PostEntityMapper {
         User author = UserEntityMapper.toDomain(e.getAuthor());
         return Post.builder()
                 .id(e.getId())
+            .version(e.getVersion())
                 .title(e.getTitle())
                 .content(e.getContent())
                 .author(author)
@@ -31,6 +32,7 @@ public final class PostEntityMapper {
         Instant created = p.getCreatedAt() == null ? Instant.now() : p.getCreatedAt();
         return PostEntity.builder()
                 .id(p.getId())
+            .version(p.getVersion())
                 .title(p.getTitle())
                 .content(p.getContent())
                 .author(authorEntity)

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class NoHandlerFoundControllerAdvice {
@@ -23,7 +24,7 @@ public class NoHandlerFoundControllerAdvice {
             Map<String, Object> body = new HashMap<>();
             body.put("error", "Not Found");
             body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(body);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON)).body(body);
         }
         ModelAndView mav = new ModelAndView("error/404");
         mav.setStatus(HttpStatus.NOT_FOUND);

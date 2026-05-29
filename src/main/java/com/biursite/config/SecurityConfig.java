@@ -1,6 +1,7 @@
 package com.biursite.config;
 
 import com.biursite.infrastructure.security.JwtFilter;
+import com.biursite.infrastructure.web.filter.CorrelationIdFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,9 +20,11 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableMethodSecurity(jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+    private final CorrelationIdFilter correlationIdFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter, CorrelationIdFilter correlationIdFilter) {
         this.jwtFilter = jwtFilter;
+        this.correlationIdFilter = correlationIdFilter;
     }
 
     /** API chain — stateless JWT for /api/** */
@@ -38,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
+            .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new ApiAuthenticationEntryPoint())
@@ -64,6 +68,7 @@ public class SecurityConfig {
                     // Allow everything else to fall through to DispatcherServlet (so unmapped routes return 404)
                     .anyRequest().permitAll()
                 )
+            .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
                 .accessDeniedHandler(new CustomAccessDeniedHandler())
             )

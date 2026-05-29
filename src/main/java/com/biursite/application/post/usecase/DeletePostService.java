@@ -6,8 +6,11 @@ import com.biursite.domain.user.entity.Role;
 import com.biursite.domain.post.entity.Post;
 import com.biursite.domain.post.event.PostDeletedEvent;
 import com.biursite.domain.shared.event.DomainEventPublisher;
+import com.biursite.application.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
+@Transactional
 public class DeletePostService implements DeletePostUseCase {
     private final PostRepositoryPort postRepository;
     private final UserRepositoryPort userRepository;
@@ -16,15 +19,12 @@ public class DeletePostService implements DeletePostUseCase {
     @Override
     public void execute(Long postId, Long currentUserId) {
         Post existing = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 
-        boolean isAuthor = existing.getAuthor().getId().equals(currentUserId);
-
-        if (!isAuthor) {
-            var currentUserOpt = userRepository.findById(currentUserId);
-            boolean isAdmin = currentUserOpt.isPresent() && currentUserOpt.get().getRole() == Role.ROLE_ADMIN;
-            if (!isAdmin) throw new IllegalStateException("Not allowed to delete this post");
-        }
+        boolean isAdmin = userRepository.findById(currentUserId)
+            .map(user -> user.getRole() == Role.ROLE_ADMIN)
+            .orElse(false);
+        existing.deleteBy(currentUserId, isAdmin);
 
         String title = existing.getTitle();
         postRepository.delete(existing);

@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @RequiredArgsConstructor
+@Transactional
 public class DeactivateAccountService implements DeactivateAccountUseCase {
     private final UserRepositoryPort userRepository;
 

@@ -4,6 +4,7 @@ import com.biursite.domain.user.entity.User;
 import com.biursite.domain.user.repository.UserRepositoryPort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.lang.NonNull;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,17 +20,17 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(@NonNull Long id) {
         return userRepository.findById(id).map(UserEntityMapper::toDomain);
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findByUsername(@NonNull String username) {
         return userRepository.findByUsername(username).map(UserEntityMapper::toDomain);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> findByEmail(@NonNull String email) {
         return userRepository.findByEmail(email).map(UserEntityMapper::toDomain);
     }
 
@@ -92,7 +93,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     @Transactional
-    public User save(User user) {
+    public User save(@NonNull User user) {
         // ensure createdAt default
         if (user.getCreatedAt() == null) {
             user.setCreatedAt(Instant.now());
@@ -100,15 +101,14 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(UserRepositoryAdapter.class);
         LOG.info("Saving user id={} username={} deactivated={}", user.getId(), user.getUsername(), user.getDeactivated());
         UserEntity ent = UserEntityMapper.toEntity(user);
-        UserEntity saved = userRepository.save(ent);
+        UserEntity saved = userRepository.saveAndFlush(ent);
         LOG.info("User persisted id={} username={} deactivated={}", saved.getId(), saved.getUsername(), saved.getDeactivated());
         return UserEntityMapper.toDomain(saved);
     }
 
     @Override
     @Transactional
-    public void delete(User user) {
-        if (user == null) return;
+    public void delete(@NonNull User user) {
         if (user.getId() != null) {
             userRepository.deleteById(user.getId());
             return;
@@ -118,12 +118,12 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
+    public boolean existsByUsername(@NonNull String username) {
         return userRepository.findByUsername(username).isPresent();
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public boolean existsByEmail(@NonNull String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 }
