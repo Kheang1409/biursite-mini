@@ -28,7 +28,7 @@ public class TimedGetUserPageQuery implements GetUserPageQuery {
     }
 
     @Override
-    @Cacheable(cacheNames = "query.users.list", key = "'p=' + #pageRequest.getPage() + '&s=' + T(java.lang.Math).min(#pageRequest.getSize(), @queryProperties.maxPageSize) + '&q=' + T(com.biursite.application.query.QueryKeyUtil).normalize(#query, @queryProperties.search.maxLength) + '&b=' + (#banned == null ? '' : #banned)", sync = true)
+    @Cacheable(cacheNames = "query.users.list", key = "'p=' + #pageRequest.getPage() + '&s=' + #pageRequest.getSize() + '&q=' + T(com.biursite.application.query.QueryKeyUtil).normalize(#query, 200) + '&b=' + (#banned == null ? '' : #banned)", sync = true)
     public Page<UserSummaryDto> execute(String query, Boolean banned, PageRequest pageRequest) {
         String normalized = searchStrategy.normalize(query);
         int size = Math.min(pageRequest.getSize(), queryProperties.getMaxPageSize());
